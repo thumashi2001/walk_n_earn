@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const loginRoutes = require("./Components/Login/loginRoutes");
 
 const app = express();
 
@@ -13,6 +14,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
+
+// Actual Routes
+app.use("/api/login", loginRoutes);
 
 // Connect MongoDB
 mongoose
