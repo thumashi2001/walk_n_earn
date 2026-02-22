@@ -116,6 +116,13 @@ const endTrip = async (req, res) => {
       endLocation.lng
     );
 
+    if (actualDistanceKm > 30) {
+        return res.status(400).json({
+            message: "Trip distance too large for walking. End location seems unrealistic.",
+            actualDistanceKm,
+        });
+}
+
     // Update trip
     trip.endLocation = endLocation;
     trip.actualDistanceKm = actualDistanceKm;
