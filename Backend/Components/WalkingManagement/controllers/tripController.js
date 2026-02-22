@@ -21,6 +21,8 @@ const createTrip = async (req, res) => {
     endLocation.lat,
     endLocation.lng
     );
+    const estimatedCo2SavedKg = Number((estimatedDistanceKmAuto * 0.2).toFixed(3));
+    const estimatedPoints = Math.round(estimatedCo2SavedKg * 10);
 
     const trip = await Trip.create({
     userId,
@@ -30,7 +32,14 @@ const createTrip = async (req, res) => {
     status: "active",
     });
 
-    return res.status(201).json(trip);
+    return res.status(201).json({
+    trip,
+    estimate: {
+        distanceKm: estimatedDistanceKmAuto,
+        co2SavedKg: estimatedCo2SavedKg,
+        points: estimatedPoints,
+    },
+    });
   } catch (err) {
     return res.status(500).json({ message: "Failed to create trip", error: err.message });
   }
@@ -144,9 +153,14 @@ const endTrip = async (req, res) => {
     });
 
     return res.status(200).json({
-      message: "Trip completed and points awarded",
-      trip,
-      pointsTransaction: tx,
+    message: "Trip completed and points awarded",
+    actual: {
+        distanceKm: actualDistanceKm,
+        co2SavedKg,
+        points: pointsEarned,
+    },
+    trip,
+    pointsTransaction: tx,
     });
   } catch (err) {
     return res.status(500).json({ message: "Failed to end trip", error: err.message });
