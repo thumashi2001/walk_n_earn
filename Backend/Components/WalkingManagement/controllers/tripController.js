@@ -14,12 +14,20 @@ const createTrip = async (req, res) => {
       return res.status(400).json({ message: "endLocation lat and lng are required" });
     }
 
+    // Calculate estimated walking distance using OSRM
+    const estimatedDistanceKmAuto = await getWalkingDistanceKm(
+    startLocation.lat,
+    startLocation.lng,
+    endLocation.lat,
+    endLocation.lng
+    );
+
     const trip = await Trip.create({
-      userId,
-      startLocation,
-      endLocation,
-      estimatedDistanceKm: estimatedDistanceKm || 0,
-      status: "active",
+    userId,
+    startLocation,
+    endLocation,
+    estimatedDistanceKm: estimatedDistanceKmAuto,
+    status: "active",
     });
 
     return res.status(201).json(trip);
