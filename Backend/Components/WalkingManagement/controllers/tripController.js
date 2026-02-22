@@ -1,4 +1,6 @@
 const Trip = require("../models/Trip");
+const PointTransaction = require("../models/PointTransaction");
+const { getWalkingDistanceKm } = require("../services/osrmService");
 
 const createTrip = async (req, res) => {
   try {
@@ -82,5 +84,58 @@ const deleteTrip = async (req, res) => {
     return res.status(500).json({ message: "Failed to delete trip", error: err.message });
   }
 };
+const endTrip = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { endLocation } = req.body;
 
-module.exports = { createTrip, getTripsByUser, updateTrip, deleteTrip };
+    if (!endLocation?.lat || !endLocation?.lng) {
+      return res.status(400).json({ message: "endLocation lat and lng are required" });
+    }
+
+    const trip = await Trip.findById(id);
+    if (!trip) return res.status(404).json({ message: "Trip not found" });
+
+    if (trip.status !== "active") {
+      return res.status(400).json({ message: "Trip is not active" });
+    }
+
+    // Calculate actual distance using OSRM
+    const actualDistanceKm = await getWalkingDistanceKm(
+      trip.startLocation.lat,
+      trip.startLocation.lng,
+      endLocation.lat,
+      endLocation.lng
+    );
+
+    // Update trip
+    trip.endLocation = endLocation;
+    trip.actualDistanceKm = actualDistanceKm;
+    trip.status = "completed";
+    trip.endedAt = new Date();
+    await trip.save();
+
+    // Award points (same formula used in pointsController)
+    const co2SavedKg = Number((actualDistanceKm * 0.2).toFixed(3));
+    const pointsEarned = Math.round(co2SavedKg * 10);
+
+    const tx = await PointTransaction.create({
+      userId: trip.userId,
+      tripId: trip._id,
+      distanceKm: actualDistanceKm,
+      co2SavedKg,
+      pointsEarned,
+      note: "Auto-awarded when trip ended",
+    });
+
+    return res.status(200).json({
+      message: "Trip completed and points awarded",
+      trip,
+      pointsTransaction: tx,
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to end trip", error: err.message });
+  }
+};
+
+module.exports = { createTrip, getTripsByUser, updateTrip, deleteTrip, endTrip };
