@@ -1,7 +1,7 @@
 const Trip = require("../models/Trip");
 const PointTransaction = require("../models/PointTransaction");
 const { getWalkingDistanceKm } = require("../services/osrmService");
-
+const User = require("../../User/models/User");
 const createTrip = async (req, res) => {
   try {
     const { userId, startLocation, endLocation, estimatedDistanceKm } = req.body;
@@ -150,6 +150,15 @@ const endTrip = async (req, res) => {
       co2SavedKg,
       pointsEarned,
       note: "Auto-awarded when trip ended",
+    });
+
+    // Update user totals
+    await User.findByIdAndUpdate(trip.userId, {
+      $inc: {
+        totalPoints: pointsEarned,
+        totalCo2SavedKg: co2SavedKg,
+        totalDistanceKm: actualDistanceKm,
+      },
     });
 
     return res.status(200).json({
