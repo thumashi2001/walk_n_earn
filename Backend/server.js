@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const walkingTripRoutes = require("./Components/WalkingManagement/routes/tripRoutes");
+const walkingPointsRoutes = require("./Components/WalkingManagement/routes/pointsRoutes");
 const loginRoutes = require("./Components/Login/loginRoutes");
 
 const app = express();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 // Actual Routes
 app.use("/api/login", loginRoutes);
 app.use("/api/walking", walkingTripRoutes);
+app.use("/api/walking", walkingPointsRoutes);
 
 // Connect MongoDB
 mongoose
