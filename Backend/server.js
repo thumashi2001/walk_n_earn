@@ -5,6 +5,7 @@ require("dotenv").config();
 const walkingTripRoutes = require("./Components/WalkingManagement/routes/tripRoutes");
 const walkingPointsRoutes = require("./Components/WalkingManagement/routes/pointsRoutes");
 const loginRoutes = require("./Components/Login/loginRoutes");
+const userRoutes = require("./Components/User/routes/userRoutes");
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 app.use("/api/login", loginRoutes);
 app.use("/api/walking", walkingTripRoutes);
 app.use("/api/walking", walkingPointsRoutes);
+app.use("/api/users", userRoutes);
 
 // Connect MongoDB
 mongoose
