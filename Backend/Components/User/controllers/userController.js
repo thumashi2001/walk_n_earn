@@ -72,4 +72,18 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+// Get user by ID (without passwordHash)
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("-passwordHash");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.status(200).json(user);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch user", error: err.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserById };
