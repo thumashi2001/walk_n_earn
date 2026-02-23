@@ -1,5 +1,5 @@
 const PointTransaction = require("../models/PointTransaction");
-
+const { updateWeeklyLeaderboard } = require("../../Leaderboard/controllers/leaderboardController");
 // Simple formula for assignment:
 // Assume 1 km by car = 0.2 kg CO2 saved when walking (custom, easy to explain)
 // Points = co2SavedKg * 10 (also easy to explain)
@@ -30,6 +30,14 @@ const createPointsFromTrip = async (req, res) => {
       pointsEarned,
       note: "Earned by walking trip",
     });
+
+    // 2️⃣ Update weekly leaderboard
+    await updateWeeklyLeaderboard(
+      userId,
+      pointsEarned,
+      dist,
+      co2SavedKg
+    );
 
     return res.status(201).json(tx);
   } catch (err) {

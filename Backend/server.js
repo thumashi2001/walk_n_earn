@@ -6,6 +6,7 @@ const walkingTripRoutes = require("./Components/WalkingManagement/routes/tripRou
 const walkingPointsRoutes = require("./Components/WalkingManagement/routes/pointsRoutes");
 const loginRoutes = require("./Components/Login/loginRoutes");
 const userRoutes = require("./Components/User/routes/userRoutes");
+const leaderboardRoutes = require("./Components/Leaderboard/routes/leaderboardRoutes");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/login", loginRoutes);
 app.use("/api/walking", walkingTripRoutes);
 app.use("/api/walking", walkingPointsRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 // Connect MongoDB
 mongoose
