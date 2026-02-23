@@ -2,9 +2,20 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const walkingTripRoutes = require("./Components/WalkingManagement/routes/tripRoutes");
+const walkingPointsRoutes = require("./Components/WalkingManagement/routes/pointsRoutes");
 const loginRoutes = require("./Components/Login/loginRoutes");
+const userRoutes = require("./Components/User/routes/userRoutes");
 
 const app = express();
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    app: "Walk n Earn",
+    status: "OK",
+    time: new Date().toISOString(),
+  });
+});
 
 // Middleware
 app.use(cors());
@@ -17,6 +28,9 @@ app.get("/", (req, res) => {
 
 // Actual Routes
 app.use("/api/login", loginRoutes);
+app.use("/api/walking", walkingTripRoutes);
+app.use("/api/walking", walkingPointsRoutes);
+app.use("/api/users", userRoutes);
 
 // Connect MongoDB
 mongoose
