@@ -1,7 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const User = require("./Components/User/models/User");
-const PointTransaction = require("./models/PointTransaction");
+const PointTransaction = require("./Components/WalkingManagement/models/PointTransaction");
 const { updateWeeklyLeaderboard } = require("./Components/Leaderboard/controllers/leaderboardController");
 
 mongoose
@@ -23,7 +23,7 @@ mongoose
       // Create point transaction
       await PointTransaction.create({
         userId: user._id,
-        tripId: mongoose.Types.ObjectId(),
+        tripId: new mongoose.Types.ObjectId(),
         distanceKm,
         co2SavedKg,
         pointsEarned,
