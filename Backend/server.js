@@ -7,6 +7,9 @@ const walkingPointsRoutes = require("./Components/WalkingManagement/routes/point
 const loginRoutes = require("./Components/Login/loginRoutes");
 const userRoutes = require("./Components/User/routes/userRoutes");
 
+// Import weather/health Advice component
+const healthAdviceRoutes = require("./Components/Weather/admin/routes/healthAdviceRoutes");
+
 const app = express();
 
 app.get("/api/health", (req, res) => {
@@ -31,6 +34,9 @@ app.use("/api/login", loginRoutes);
 app.use("/api/walking", walkingTripRoutes);
 app.use("/api/walking", walkingPointsRoutes);
 app.use("/api/users", userRoutes);
+
+// weather/health route
+app.use("/api/admin/health-advice", healthAdviceRoutes);
 
 // Connect MongoDB
 mongoose
