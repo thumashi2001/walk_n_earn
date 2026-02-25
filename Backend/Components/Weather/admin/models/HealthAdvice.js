@@ -134,4 +134,4 @@ HealthAdviceSchema.pre("validate", function (next) {
   }
 });
 
-module.exports = mongoose.model("HealthAdvice", HealthAdviceSchema);
+module.exports = mongoose.model("Weather_HealthAdvice", HealthAdviceSchema);
