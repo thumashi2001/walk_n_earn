@@ -1,8 +1,7 @@
 const HealthAdvice = require("../models/HealthAdvice");
 
-// ========================
 // CREATE – New Health Advice
-// ========================
+
 exports.createHealthAdvice = async (req, res) => {
   try {
     const advice = await HealthAdvice.create(req.body);
@@ -19,9 +18,8 @@ exports.createHealthAdvice = async (req, res) => {
   }
 };
 
-// ========================
 // READ – Get All Health Advices
-// ========================
+
 exports.getAllHealthAdvices = async (req, res) => {
   try {
     const advices = await HealthAdvice.find().sort({
@@ -41,9 +39,8 @@ exports.getAllHealthAdvices = async (req, res) => {
   }
 };
 
-// ========================
 // READ – Get Single Health Advice by ID
-// ========================
+
 exports.getHealthAdviceById = async (req, res) => {
   try {
     const advice = await HealthAdvice.findById(req.params.id);
@@ -58,9 +55,8 @@ exports.getHealthAdviceById = async (req, res) => {
   }
 };
 
-// ========================
 // UPDATE – Update Health Advice by ID
-// ========================
+
 exports.updateHealthAdvice = async (req, res) => {
   try {
     const advice = await HealthAdvice.findByIdAndUpdate(
@@ -91,9 +87,8 @@ exports.updateHealthAdvice = async (req, res) => {
   }
 };
 
-// ========================
 // DELETE – Delete Health Advice by ID
-// ========================
+
 exports.deleteHealthAdvice = async (req, res) => {
   try {
     const advice = await HealthAdvice.findByIdAndDelete(req.params.id);

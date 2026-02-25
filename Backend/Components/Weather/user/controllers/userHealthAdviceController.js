@@ -1,9 +1,8 @@
 const HealthAdvice = require("../../admin/models/HealthAdvice"); // Adjust path
 const { fetchCurrentWeather } = require("../services/weatherService"); // your existing service
 
-// ============================
 // Get Health Advice for Current Weather
-// ============================
+
 const getHealthAdviceForCurrentWeather = async (req, res) => {
   try {
     const { lat, lon } = req.query;
@@ -48,10 +47,6 @@ const getHealthAdviceForCurrentWeather = async (req, res) => {
             currentWeather.wind_speed >= min && currentWeather.wind_speed <= max
           );
         }
-        case "UV":
-          return false; // Free plan does not provide UV
-        default:
-          return false;
       }
     });
 
@@ -70,5 +65,5 @@ const getHealthAdviceForCurrentWeather = async (req, res) => {
   }
 };
 
-// Export the function as a single module
+
 module.exports = getHealthAdviceForCurrentWeather;
