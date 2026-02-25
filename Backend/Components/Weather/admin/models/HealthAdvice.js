@@ -2,9 +2,8 @@ const mongoose = require("mongoose");
 
 const HealthAdviceSchema = new mongoose.Schema(
   {
-    // ------------------------
     // Basic Info
-    // ------------------------
+
     title: {
       type: String,
       required: true,
@@ -36,7 +35,6 @@ const HealthAdviceSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["Normal", "Low", "Caution", "Moderate"],
-      // Example: "Caution"
     },
 
     priority: {
@@ -44,24 +42,20 @@ const HealthAdviceSchema = new mongoose.Schema(
       required: true,
       min: 1,
       max: 3,
-      // Example: 2 (Medium priority)
     },
 
     active: {
       type: Boolean,
       default: true,
-      // Example: true
     },
 
-    // ------------------------
     // Trigger Configuration
-    // ------------------------
+
     trigger: {
       parameter: {
         type: String,
         required: true,
         enum: ["Temperature", "WeatherCondition", "Humidity", "Wind"],
-        // UV removed for free plan
         // Example: "Temperature"
       },
 
@@ -69,7 +63,6 @@ const HealthAdviceSchema = new mongoose.Schema(
         type: String,
         required: true,
         enum: ["RANGE", "EXACT"],
-        // Example: "RANGE" for Temperature, "EXACT" for WeatherCondition
       },
 
       range: {
@@ -90,13 +83,11 @@ const HealthAdviceSchema = new mongoose.Schema(
           "Snow",
           "Mist",
         ],
-        // Example for WeatherCondition: "Rain"
       },
     },
 
-    // ------------------------
     // Validity / Timing
-    // ------------------------
+
     validFrom: Date,
     validTo: Date,
     timeStart: String,
@@ -110,9 +101,8 @@ const HealthAdviceSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// ------------------------
 // Validation Logic
-// ------------------------
+
 HealthAdviceSchema.pre("validate", function (next) {
   const trigger = this.trigger;
 
