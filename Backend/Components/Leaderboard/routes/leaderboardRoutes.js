@@ -37,4 +37,4 @@ router.put("/admin/update", adminUpdateWeeklyPoints);
 //DELETE - Delete weekly record
 router.delete("/delete", deleteWeeklyRecord);
 
-module.exports = router;
+module.exports = router;  

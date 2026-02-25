@@ -22,7 +22,7 @@ const getWeekRange = () => {
 };
 
 /**
- * 🟢 CREATE / UPDATE WEEKLY LEADERBOARD
+ * CREATE / UPDATE WEEKLY LEADERBOARD
  * (Equivalent to SQL ON DUPLICATE KEY UPDATE)
  */
 const updateWeeklyLeaderboard = async (
@@ -56,7 +56,7 @@ const updateWeeklyLeaderboard = async (
 };
 
 /**
- * 🔵 GET TOP 10 THIS WEEK
+ * GET TOP 10 THIS WEEK
  */
 const getTop10 = async (req, res) => {
   try {
@@ -96,7 +96,7 @@ const getTop10 = async (req, res) => {
 };
 
 /**
- * 🟣 GET SPECIFIC USER RANK
+ * GET SPECIFIC USER RANK
  */
 const getUserRank = async (req, res) => {
   try {
@@ -133,7 +133,7 @@ const getUserRank = async (req, res) => {
 };
 
 /**
- * 🟡 ADMIN: MANUAL UPDATE POINTS
+ * ADMIN: MANUAL UPDATE POINTS
  */
 const adminUpdateWeeklyPoints = async (req, res) => {
   try {
@@ -163,7 +163,7 @@ const adminUpdateWeeklyPoints = async (req, res) => {
 };
 
 /**
- * 🔴 DELETE WEEK RECORD
+ * DELETE WEEK RECORD
  */
 const deleteWeeklyRecord = async (req, res) => {
   try {
