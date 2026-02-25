@@ -12,6 +12,7 @@ const healthAdviceRoutes = require("./Components/Weather/admin/routes/healthAdvi
 
 // User side weather route component
 const weatherUserRoutes = require("./Components/Weather/user/routes/weatherRoutes");
+const userHealthAdviceRoutes = require("./Components/Weather/user/routes/userHealthAdviceRoutes");
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/admin/health-advice", healthAdviceRoutes);
 
 // User weather routes
 app.use("/api/weather", weatherUserRoutes);
+app.use("/api/user/health-advice", userHealthAdviceRoutes);
 
 // Connect MongoDB
 mongoose

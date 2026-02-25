@@ -132,8 +132,6 @@ HealthAdviceSchema.pre("validate", function (next) {
     if (trigger.exactValue)
       return next(new Error(`${trigger.parameter} cannot use exactValue.`));
   }
-
-  next();
 });
 
 module.exports = mongoose.model("HealthAdvice", HealthAdviceSchema);
