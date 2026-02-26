@@ -12,7 +12,8 @@ const redemptionSchema = new mongoose.Schema(
             ref: "Reward",
             required: true
         },
-        pointsUsed: { type: Number, required: true }
+        pointsUsed: { type: Number, required: true },
+        voucherCode: { type: String, required: true }
     },
     { timestamps: true }
 );

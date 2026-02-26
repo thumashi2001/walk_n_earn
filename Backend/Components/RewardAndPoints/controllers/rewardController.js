@@ -1,6 +1,7 @@
 const Reward = require("../models/Reward");
 const Redemption = require("../models/Redemption");
 const User = require("../../User/models/User");
+const { sendVoucherEmail } = require("../../../utils/emailService");
 
 //Create STORE ADMIN ONLY
 exports.createReward = async (req, res) => {
@@ -86,14 +87,25 @@ exports.redeemReward = async (req, res) => {
     await user.save();
     await reward.save();
 
+    //Generate voucher code
+    const voucherCode = "VOUCHER-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+
     const redemption = await Redemption.create({
       userId: user._id,
       rewardId: reward._id,
-      pointsUsed: reward.pointsRequired
+      pointsUsed: reward.pointsRequired,
+      voucherCode
     });
 
+    //Send email
+    try {
+      await sendVoucherEmail(user.email, voucherCode, reward.title);
+    } catch (err) {
+      console.log("Email sending failed:", err.message);
+    }
+
     res.json({
-      message: "Redeemed Successfully",
+      message: "Redeemed Successfully. Voucher sent to email!",
       redemption
     });
 
