@@ -102,35 +102,32 @@ const HealthAdviceSchema = new mongoose.Schema(
 );
 
 // Validation Logic
-
-HealthAdviceSchema.pre("validate", function (next) {
+HealthAdviceSchema.pre("validate", function () {
   const trigger = this.trigger;
 
-  if (!trigger) return next(new Error("Trigger is required."));
+  if (!trigger) throw new Error("Trigger is required.");
 
   // WeatherCondition must use EXACT logic
   if (trigger.parameter === "WeatherCondition") {
     if (trigger.conditionType !== "EXACT")
-      return next(new Error("WeatherCondition must use EXACT condition type."));
+      throw new Error("WeatherCondition must use EXACT condition type.");
     if (!trigger.exactValue)
-      return next(new Error("WeatherCondition requires an exactValue."));
+      throw new Error("WeatherCondition requires an exactValue.");
     if (trigger.range && (trigger.range.min || trigger.range.max))
-      return next(new Error("WeatherCondition cannot use range values."));
+      throw new Error("WeatherCondition cannot use range values.");
   }
 
   // Numeric parameters (Temperature, Humidity, Wind) must use RANGE
   if (["Temperature", "Humidity", "Wind"].includes(trigger.parameter)) {
     if (trigger.conditionType !== "RANGE")
-      return next(
-        new Error(`${trigger.parameter} must use RANGE condition type.`),
-      );
+      throw new Error(`${trigger.parameter} must use RANGE condition type.`);
     if (
       !trigger.range ||
       (trigger.range.min == null && trigger.range.max == null)
     )
-      return next(new Error(`${trigger.parameter} requires min or max value.`));
+      throw new Error(`${trigger.parameter} requires min or max value.`);
     if (trigger.exactValue)
-      return next(new Error(`${trigger.parameter} cannot use exactValue.`));
+      throw new Error(`${trigger.parameter} cannot use exactValue.`);
   }
 });
 

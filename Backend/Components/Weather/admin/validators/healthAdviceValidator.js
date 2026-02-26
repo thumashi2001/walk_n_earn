@@ -1,9 +1,5 @@
-// validators/healthAdviceValidator.js
 
-/**
- * Validate request body for creating/updating HealthAdvice
- * Matches the current HealthAdvice schema fields and enums
- */
+
 const validateHealthAdviceRequest = (data) => {
   const errors = [];
 
