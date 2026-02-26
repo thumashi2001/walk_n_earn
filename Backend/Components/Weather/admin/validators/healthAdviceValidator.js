@@ -1,5 +1,3 @@
-
-
 const validateHealthAdviceRequest = (data) => {
   const errors = [];
 
@@ -39,6 +37,11 @@ const validateHealthAdviceRequest = (data) => {
     errors.push("Priority is required.");
   } else if (typeof data.priority !== "number" || data.priority < 1 || data.priority > 3) {
     errors.push("Priority must be a number between 1 and 3.");
+  }
+
+  // Active
+  if (data.active != null && typeof data.active !== "boolean") {
+    errors.push("Active must be a boolean.");
   }
 
   // --- Trigger ---
@@ -87,6 +90,16 @@ const validateHealthAdviceRequest = (data) => {
       }
       if (trigger.exactValue) {
         errors.push(`${trigger.parameter} cannot have exactValue.`);
+      }
+    }
+
+    // Optional: check min/max numeric validity
+    if (trigger.range) {
+      if (trigger.range.min != null && typeof trigger.range.min !== "number") {
+        errors.push("Trigger range.min must be a number.");
+      }
+      if (trigger.range.max != null && typeof trigger.range.max !== "number") {
+        errors.push("Trigger range.max must be a number.");
       }
     }
   }
