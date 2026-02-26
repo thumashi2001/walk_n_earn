@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { body, param, validationResult } = require("express-validator");
 
 const {
   updateWeeklyLeaderboard,
@@ -9,32 +10,127 @@ const {
   deleteWeeklyRecord,
 } = require("../controllers/leaderboardController");
 
-//CREATE / UPDATE (User activity update)
-router.post("/update", async (req, res) => {
-  try {
-    const { userId, points, distance, emission } = req.body;
-
-    await updateWeeklyLeaderboard(userId, points, distance, emission);
-
-    res.status(200).json({ message: "Leaderboard updated successfully" });
-  } catch (err) {
-    res.status(500).json({
-      message: "Failed to update leaderboard",
-      error: err.message,
+/* -------------------------------------------------------
+   🔎 Validation Error Handler Middleware
+------------------------------------------------------- */
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array(),
     });
   }
-});
+  next();
+};
 
-//READ - Top 10
-router.get("/top10", getTop10);
+/* -------------------------------------------------------
+   CREATE or UPDATE (User activity)
+------------------------------------------------------- */
+router.post(
+  "/",
+  [
+    body("userId")
+      .notEmpty()
+      .withMessage("User ID is required")
+      .isMongoId()
+      .withMessage("Invalid User ID"),
 
-//READ - Specific user rank
-router.get("/rank/:userId", getUserRank);
+    body("points")
+      .notEmpty()
+      .withMessage("Points are required")
+      .isNumeric()
+      .withMessage("Points must be a number"),
 
-//UPDATE - Admin manual update
-router.put("/admin/update", adminUpdateWeeklyPoints);
+    body("distance")
+      .notEmpty()
+      .withMessage("Distance is required")
+      .isNumeric()
+      .withMessage("Distance must be a number"),
 
-//DELETE - Delete weekly record
-router.delete("/delete", deleteWeeklyRecord);
+    body("emission")
+      .notEmpty()
+      .withMessage("Emission is required")
+      .isNumeric()
+      .withMessage("Emission must be a number"),
+  ],
+  validate,
+  async (req, res) => {
+    try {
+      const { userId, points, distance, emission } = req.body;
 
-module.exports = router;  
+      const result = await updateWeeklyLeaderboard(
+        userId,
+        points,
+        distance,
+        emission
+      );
+
+      res.status(201).json({
+        success: true,
+        message: "Leaderboard updated successfully",
+        data: result,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  }
+);
+
+/* -------------------------------------------------------
+   READ - Top 10
+------------------------------------------------------- */
+router.get("/top", getTop10);
+
+/* -------------------------------------------------------
+   READ - Specific User Rank
+------------------------------------------------------- */
+router.get(
+  "/rank/:userId",
+  [
+    param("userId")
+      .isMongoId()
+      .withMessage("Invalid User ID"),
+  ],
+  validate,
+  getUserRank
+);
+
+/* -------------------------------------------------------
+   UPDATE (Admin Manual Update)
+------------------------------------------------------- */
+router.put(
+  "/:id",
+  [
+    param("id")
+      .isMongoId()
+      .withMessage("Invalid Leaderboard Record ID"),
+
+    body("newPoints")
+      .notEmpty()
+      .withMessage("New points value is required")
+      .isNumeric()
+      .withMessage("New points must be a number"),
+  ],
+  validate,
+  adminUpdateWeeklyPoints
+);
+
+/* -------------------------------------------------------
+   DELETE Leaderboard Record
+------------------------------------------------------- */
+router.delete(
+  "/:id",
+  [
+    param("id")
+      .isMongoId()
+      .withMessage("Invalid Leaderboard Record ID"),
+  ],
+  validate,
+  deleteWeeklyRecord
+);
+
+module.exports = router;

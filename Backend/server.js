@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
 require("dotenv").config();
 const walkingTripRoutes = require("./Components/WalkingManagement/routes/tripRoutes");
 const walkingPointsRoutes = require("./Components/WalkingManagement/routes/pointsRoutes");
@@ -9,6 +11,18 @@ const userRoutes = require("./Components/User/routes/userRoutes");
 const leaderboardRoutes = require("./Components/Leaderboard/routes/leaderboardRoutes");
 
 const app = express();
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Walk n Earn API",
+      version: "1.0.0",
+    },
+  },
+  apis: ["./Components/**/*.js"],
+};
+const specs = swaggerJsdoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
