@@ -12,6 +12,13 @@ const leaderboardRoutes = require("./Components/Leaderboard/routes/leaderboardRo
 const swaggerDocument = require("./config/swagger");
 
 const path = require("path");
+// Import weather/health Advice component
+const healthAdviceRoutes = require("./Components/Weather/admin/routes/healthAdviceRoutes");
+
+// User side weather route component
+const weatherUserRoutes = require("./Components/Weather/user/routes/weatherRoutes");
+const userHealthAdviceRoutes = require("./Components/Weather/user/routes/userHealthAdviceRoutes");
+
 const app = express();
 const options = {
   definition: {
@@ -51,6 +58,13 @@ app.use("/api/walking", walkingTripRoutes);
 app.use("/api/walking", walkingPointsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/leaderboard", leaderboardRoutes);
+
+// weather/health route
+app.use("/api/admin/health-advice", healthAdviceRoutes);
+
+// User weather routes
+app.use("/api/weather", weatherUserRoutes);
+app.use("/api/user/health-advice", userHealthAdviceRoutes);
 
 // Connect MongoDB
 mongoose
