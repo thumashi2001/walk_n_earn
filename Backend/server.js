@@ -9,7 +9,9 @@ const walkingPointsRoutes = require("./Components/WalkingManagement/routes/point
 const loginRoutes = require("./Components/Login/loginRoutes");
 const userRoutes = require("./Components/User/routes/userRoutes");
 const leaderboardRoutes = require("./Components/Leaderboard/routes/leaderboardRoutes");
+const swaggerDocument = require("./config/swagger");
 
+const path = require("path");
 const app = express();
 const options = {
   definition: {
@@ -19,10 +21,12 @@ const options = {
       version: "1.0.0",
     },
   },
-  apis: ["./Components/**/*.js"],
+  apis: ["Components/**/routes/*.js"], 
 };
+
 const specs = swaggerJsdoc(options);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
