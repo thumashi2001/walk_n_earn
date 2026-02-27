@@ -1,15 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const swaggerUi = require("swagger-ui-express");
-const swaggerJsdoc = require("swagger-jsdoc");
 require("dotenv").config();
 const walkingTripRoutes = require("./Components/WalkingManagement/routes/tripRoutes");
 const walkingPointsRoutes = require("./Components/WalkingManagement/routes/pointsRoutes");
 const loginRoutes = require("./Components/Login/loginRoutes");
 const userRoutes = require("./Components/User/routes/userRoutes");
-const leaderboardRoutes = require("./Components/Leaderboard/routes/leaderboardRoutes");
-const swaggerDocument = require("./config/swagger");
+const rewardRoutes = require("./Components/RewardAndPoints/routes/rewardRoutes");
 
 const path = require("path");
 // Import weather/health Advice component
@@ -20,20 +17,6 @@ const weatherUserRoutes = require("./Components/Weather/user/routes/weatherRoute
 const userHealthAdviceRoutes = require("./Components/Weather/user/routes/userHealthAdviceRoutes");
 
 const app = express();
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Walk n Earn API",
-      version: "1.0.0",
-    },
-  },
-  apis: ["Components/**/routes/*.js"], 
-};
-
-const specs = swaggerJsdoc(options);
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -57,7 +40,7 @@ app.use("/api/login", loginRoutes);
 app.use("/api/walking", walkingTripRoutes);
 app.use("/api/walking", walkingPointsRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/leaderboard", leaderboardRoutes);
+app.use("/api/rewards", rewardRoutes);
 
 // weather/health route
 app.use("/api/admin/health-advice", healthAdviceRoutes);
