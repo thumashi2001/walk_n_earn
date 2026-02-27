@@ -6,6 +6,9 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },
 
+    //Role based system
+    role: { type: String, enum: ["user", "admin"], default: "user" },
+
     // Optional fields useful for your app
     totalPoints: { type: Number, default: 0 },
     totalCo2SavedKg: { type: Number, default: 0 },
