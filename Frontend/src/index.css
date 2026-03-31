@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-[#fdf6f0];
+}
+
+.input {
+  @apply border border-gray-300 p-2 rounded-lg w-full mb-3;
+}
+
+.btn {
+  @apply bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition;
+}
