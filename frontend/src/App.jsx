@@ -2,16 +2,23 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
 import './App.css'
+
+function Home() {
+  return <h1 className="p-10 text-2xl">Home Page</h1>
+}
 
 function App() {
   return (
-    <div className="text-center p-10">
-      <h1 className="text-4xl font-bold text-amber-700">
-        Step2Earn
-      </h1>
-    </div>
-  )
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App
