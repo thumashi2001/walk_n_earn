@@ -1,4 +1,19 @@
 import { motion } from "framer-motion";
+import API from "../services/api";
+
+const handleRedeem = async () => {
+    try {
+        const res = await API.post("/rewards/redeem", {
+            rewardId: reward._id,
+        });
+
+        alert("Redeemed Successfully!!");
+    } catch (error) {
+        alert(error.response?.data?.message || "Error redeeming");
+    }
+};
+
+
 
 export default function RewardCard({ reward }) {
   return (
@@ -30,8 +45,11 @@ export default function RewardCard({ reward }) {
           {reward.pointsRequired} points
         </p>
 
-        <button className="mt-4 bg-[#e2a45c] hover:bg-[#d4934b] text-black text-sm px-6 py-2 rounded-full transition duration-300 hover:scale-105">
-          Redeem
+        <button
+           onClick={handleRedeem}
+           className="mt-4 bg-[#e2a45c] hover:bg-[#d4934b] text-black text-sm px-6 py-2 rounded-full"
+        >
+           Redeem
         </button>
       </div>
     </motion.div>
