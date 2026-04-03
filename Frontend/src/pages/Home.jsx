@@ -1,17 +1,28 @@
 import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
 
 function Home() {
   const user = JSON.parse(localStorage.getItem("walknEarnUser"));
 
   const [location, setLocation] = useState(null);
-  const [destination, setDestination] = useState("");
-  const [estimate, setEstimate] = useState(null);
-  const [tripId, setTripId] = useState(null);
-  const [tripStarted, setTripStarted] = useState(false);
-  const [result, setResult] = useState(null);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    if (!navigator.geolocation) {
+      setMessage("Using default location");
+      setLocation({ lat: 6.906, lng: 79.9707 });
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocation({
@@ -20,166 +31,47 @@ function Home() {
         });
       },
       () => {
-        setLocation({
-          lat: 6.9060,
-          lng: 79.9707,
-        });
+        setMessage("Using default location");
+        setLocation({ lat: 6.906, lng: 79.9707 });
       }
     );
   }, []);
 
-  const handleGetEstimate = async () => {
-    setMessage("Getting estimate...");
-
-    try {
-      const res = await fetch("http://localhost:5050/api/walking/trips", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user._id,
-          startLocation: {
-            lat: location.lat,
-            lng: location.lng,
-            address: "Current",
-          },
-          endLocation: {
-            lat: location.lat + 0.002,
-            lng: location.lng + 0.002,
-            address: destination,
-          },
-        }),
-      });
-
-      const data = await res.json();
-
-      setEstimate(data.estimate);
-      setTripId(data.trip._id);
-      setMessage("Estimate ready");
-    } catch {
-      setMessage("Error");
-    }
-  };
-
-  const handleStart = () => {
-    setTripStarted(true);
-    setMessage("Trip started 🚶");
-  };
-
-  const handleEnd = async () => {
-    setMessage("Ending trip...");
-
-    try {
-      const res = await fetch(
-        `http://localhost:5050/api/walking/trips/${tripId}/end`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            endLocation: {
-              lat: location.lat + 0.001,
-              lng: location.lng + 0.001,
-              address: "End",
-            },
-          }),
-        }
-      );
-
-      const data = await res.json();
-
-      setResult(data.actual);
-      setMessage("Trip completed 🎉");
-    } catch {
-      setMessage("Failed to end trip");
-    }
-  };
-
   return (
     <div>
-      <h2>Hi 👋</h2>
-      <p>{user?.fullName}</p>
+      <h2 style={{ marginBottom: "6px" }}>Hi 👋</h2>
+      <p style={{ marginTop: 0, color: "#666" }}>{user?.fullName}</p>
 
-      <input
-        placeholder="Enter destination"
-        value={destination}
-        onChange={(e) => setDestination(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "14px",
-          borderRadius: "12px",
-          border: "1px solid #ddd",
-          marginTop: "20px",
-        }}
-      />
-
-      <button
-        onClick={handleGetEstimate}
-        style={{
-          marginTop: "10px",
-          width: "100%",
-          padding: "14px",
-          borderRadius: "12px",
-          background: "#edaf5e",
-          border: "none",
-          fontWeight: "700",
-        }}
-      >
-        Get Estimate
-      </button>
-
-      {estimate && !tripStarted && (
-        <div style={{ marginTop: "20px" }}>
-          <p>Distance: {estimate.distanceKm} km</p>
-          <p>CO₂: {estimate.co2SavedKg}</p>
-          <p>Points: {estimate.points}</p>
-
-          <button
-            onClick={handleStart}
-            style={{
-              marginTop: "10px",
-              width: "100%",
-              padding: "14px",
-              borderRadius: "12px",
-              background: "green",
-              color: "#fff",
-              border: "none",
-            }}
-          >
-            Start Trip
-          </button>
-        </div>
+      {message && (
+        <p style={{ fontSize: "14px", color: "#666" }}>{message}</p>
       )}
 
-      {tripStarted && !result && (
-        <button
-          onClick={handleEnd}
+      {location && (
+        <div
           style={{
-            marginTop: "20px",
-            width: "100%",
-            padding: "14px",
-            borderRadius: "12px",
-            background: "red",
-            color: "#fff",
-            border: "none",
+            marginTop: "16px",
+            borderRadius: "16px",
+            overflow: "hidden",
+            border: "1px solid #eee",
           }}
         >
-          End Trip
-        </button>
-      )}
-
-      {result && (
-        <div style={{ marginTop: "20px" }}>
-          <h4>Result 🎉</h4>
-          <p>Distance: {result.distanceKm} km</p>
-          <p>CO₂ Saved: {result.co2SavedKg}</p>
-          <p>Points Earned: {result.points}</p>
+          <MapContainer
+            center={[location.lat, location.lng]}
+            zoom={16}
+            style={{ height: "320px", width: "100%" }}
+          >
+            <TileLayer
+              attribution='&copy; OpenStreetMap contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={[location.lat, location.lng]}>
+              <Popup>You are here</Popup>
+            </Marker>
+          </MapContainer>
         </div>
       )}
 
-      {message && <p style={{ marginTop: "10px" }}>{message}</p>}
+      {!location && <p>Loading map...</p>}
     </div>
   );
 }
