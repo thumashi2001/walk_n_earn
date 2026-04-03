@@ -36,8 +36,9 @@ const destinations = {
 
 function Home() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("walknEarnUser"));
+  const savedUser = JSON.parse(localStorage.getItem("walknEarnUser"));
 
+  const [user, setUser] = useState(savedUser);
   const [location, setLocation] = useState(null);
   const [message, setMessage] = useState("");
   const [selectedDestination, setSelectedDestination] = useState("");
@@ -45,9 +46,27 @@ function Home() {
   const [tripId, setTripId] = useState(null);
   const [tripStarted, setTripStarted] = useState(false);
   const [finalResult, setFinalResult] = useState(null);
+  const [trips, setTrips] = useState([]);
+
+  const loadTrips = async () => {
+    if (!user?._id) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5050/api/walking/trips?userId=${user._id}`
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        setTrips(data);
+      }
+    } catch (error) {
+      console.log("Failed to load trips");
+    }
+  };
 
   useEffect(() => {
-    if (!user) {
+    if (!savedUser) {
       navigate("/");
       return;
     }
@@ -55,23 +74,24 @@ function Home() {
     if (!navigator.geolocation) {
       setMessage("Using default location");
       setLocation({ lat: 6.906, lng: 79.9707, address: "Malabe" });
-      return;
+    } else {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setLocation({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            address: "Current Location",
+          });
+        },
+        () => {
+          setMessage("Using default location");
+          setLocation({ lat: 6.906, lng: 79.9707, address: "Malabe" });
+        }
+      );
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLocation({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-          address: "Current Location",
-        });
-      },
-      () => {
-        setMessage("Using default location");
-        setLocation({ lat: 6.906, lng: 79.9707, address: "Malabe" });
-      }
-    );
-  }, [user, navigate]);
+    loadTrips();
+  }, [navigate]);
 
   const handleEstimate = async () => {
     if (!location || !selectedDestination) {
@@ -114,6 +134,7 @@ function Home() {
       setEstimate(data.estimate);
       setTripId(data.trip._id);
       setMessage("Estimate ready");
+      loadTrips();
     } catch (error) {
       setMessage("Something went wrong while getting estimate");
     }
@@ -175,6 +196,8 @@ function Home() {
           };
 
           localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
+          setUser(updatedUser);
+          loadTrips();
         },
         async () => {
           const fallbackFinalLocation = {
@@ -217,6 +240,8 @@ function Home() {
           };
 
           localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
+          setUser(updatedUser);
+          loadTrips();
         }
       );
     } catch (error) {
@@ -275,7 +300,7 @@ function Home() {
         <div style={{ marginTop: "12px", fontSize: "14px" }}>
           <p style={{ margin: "4px 0" }}>Points: {user?.totalPoints || 0}</p>
           <p style={{ margin: "4px 0" }}>
-            CO₂ Saved: {user?.totalCo2SavedKg || 0} kg
+            CO₂ Saved: {Number(user?.totalCo2SavedKg || 0).toFixed(3)} kg
           </p>
         </div>
       </div>
@@ -448,6 +473,49 @@ function Home() {
             <p style={{ margin: "6px 0" }}>
               Points Earned: {finalResult.points}
             </p>
+          </div>
+        )}
+      </div>
+
+      <div
+        style={{
+          background: "#fff",
+          border: "1px solid #eee",
+          borderRadius: "18px",
+          padding: "16px",
+        }}
+      >
+        <h3 style={{ marginTop: 0 }}>Trip History</h3>
+
+        {trips.length === 0 ? (
+          <p style={{ color: "#666", fontSize: "14px" }}>No trips yet</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {trips.slice(0, 5).map((trip) => (
+              <div
+                key={trip._id}
+                style={{
+                  padding: "12px",
+                  borderRadius: "12px",
+                  background: "#f8f8f8",
+                  border: "1px solid #eee",
+                }}
+              >
+                <p style={{ margin: "0 0 6px 0", fontWeight: "600" }}>
+                  {trip.startLocation?.address || "Start"} →{" "}
+                  {trip.endLocation?.address || "End"}
+                </p>
+                <p style={{ margin: "4px 0", fontSize: "14px", color: "#555" }}>
+                  Status: {trip.status}
+                </p>
+                <p style={{ margin: "4px 0", fontSize: "14px", color: "#555" }}>
+                  Estimated: {trip.estimatedDistanceKm} km
+                </p>
+                <p style={{ margin: "4px 0", fontSize: "14px", color: "#555" }}>
+                  Actual: {trip.actualDistanceKm} km
+                </p>
+              </div>
+            ))}
           </div>
         )}
       </div>
