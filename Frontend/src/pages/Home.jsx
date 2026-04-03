@@ -290,9 +290,9 @@ function Home() {
   };
 
   const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+  logout();
+    navigate("/login");
+    };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>

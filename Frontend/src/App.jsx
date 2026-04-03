@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
@@ -33,6 +34,10 @@ function App() {
           <Routes>
             <Route
               path="/"
+              element={user ? <Navigate to="/home" replace /> : <Landing />}
+            />
+            <Route
+              path="/login"
               element={user ? <Navigate to="/home" replace /> : <Login />}
             />
             <Route
