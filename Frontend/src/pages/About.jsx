@@ -6,22 +6,22 @@ function About() {
 
   const teamMembers = [
     {
-      name: "Malli Rajapaksha",
+      name: "Mahinda Rajapaksha",
       role: "Frontend Wizard",
       desc: "Makes buttons look good and somehow fixes bugs by refreshing twice.",
     },
     {
-      name: "Kapila Wickramasingha",
+      name: "Ranil Wickramasinghe",
       role: "Backend Boss",
       desc: "Talks to databases nicely and keeps APIs from getting angry.",
     },
     {
-      name: "Piyasena Ranatunga",
+      name: "Anura Kumara",
       role: "Map Master",
       desc: "Knows every road, marker, and random coordinate in the project.",
     },
     {
-      name: "Suniladasa Premakoon",
+      name: "Laal Kantha",
       role: "Presentation Hero",
       desc: "Explains everything confidently even when the internet is slow.",
     },
