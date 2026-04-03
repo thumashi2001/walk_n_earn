@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -48,12 +49,28 @@ function Home() {
   const [finalResult, setFinalResult] = useState(null);
   const [trips, setTrips] = useState([]);
 
+  const loadUser = async () => {
+    if (!savedUser?._id) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/users/${savedUser._id}`);
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("walknEarnUser", JSON.stringify(data));
+        setUser(data);
+      }
+    } catch (error) {
+      console.log("Failed to load user");
+    }
+  };
+
   const loadTrips = async () => {
-    if (!user?._id) return;
+    if (!savedUser?._id) return;
 
     try {
       const response = await fetch(
-        `http://localhost:5050/api/walking/trips?userId=${user._id}`
+        `${API_URL}/api/walking/trips?userId=${savedUser._id}`
       );
       const data = await response.json();
 
@@ -90,6 +107,7 @@ function Home() {
       );
     }
 
+    loadUser();
     loadTrips();
   }, [navigate]);
 
@@ -108,7 +126,7 @@ function Home() {
     try {
       const endLocation = destinations[selectedDestination];
 
-      const response = await fetch("http://localhost:5050/api/walking/trips", {
+      const response = await fetch(`${API_URL}/api/walking/trips`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,7 +181,7 @@ function Home() {
           };
 
           const response = await fetch(
-            `http://localhost:5050/api/walking/trips/${tripId}/end`,
+            `${API_URL}/api/walking/trips/${tripId}/end`,
             {
               method: "PUT",
               headers: {
@@ -197,6 +215,7 @@ function Home() {
 
           localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
           setUser(updatedUser);
+          loadUser();
           loadTrips();
         },
         async () => {
@@ -207,7 +226,7 @@ function Home() {
           };
 
           const response = await fetch(
-            `http://localhost:5050/api/walking/trips/${tripId}/end`,
+            `${API_URL}/api/walking/trips/${tripId}/end`,
             {
               method: "PUT",
               headers: {
@@ -241,6 +260,7 @@ function Home() {
 
           localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
           setUser(updatedUser);
+          loadUser();
           loadTrips();
         }
       );
