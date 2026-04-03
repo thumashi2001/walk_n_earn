@@ -12,29 +12,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
 
-const destinations = {
-  "Kahanthota Road": {
-    lat: 6.9097,
-    lng: 79.9729,
-    address: "Kahanthota Road",
-  },
-  Maharagama: {
-    lat: 6.848,
-    lng: 79.926,
-    address: "Maharagama",
-  },
-  "SLIIT Campus Malabe": {
-    lat: 6.9147,
-    lng: 79.9729,
-    address: "SLIIT Campus Malabe",
-  },
-  Nugegoda: {
-    lat: 6.865,
-    lng: 79.8997,
-    address: "Nugegoda",
-  },
-};
-
 function Home() {
   const navigate = useNavigate();
   const savedUser = JSON.parse(localStorage.getItem("walknEarnUser"));
@@ -42,12 +19,15 @@ function Home() {
   const [user, setUser] = useState(savedUser);
   const [location, setLocation] = useState(null);
   const [message, setMessage] = useState("");
-  const [selectedDestination, setSelectedDestination] = useState("");
+  const [destinationQuery, setDestinationQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedDestination, setSelectedDestination] = useState(null);
   const [estimate, setEstimate] = useState(null);
   const [tripId, setTripId] = useState(null);
   const [tripStarted, setTripStarted] = useState(false);
   const [finalResult, setFinalResult] = useState(null);
   const [trips, setTrips] = useState([]);
+  const [searching, setSearching] = useState(false);
 
   const loadUser = async () => {
     if (!savedUser?._id) return;
@@ -111,9 +91,50 @@ function Home() {
     loadTrips();
   }, [navigate]);
 
+  const handleSearchDestination = async () => {
+    if (!destinationQuery.trim()) {
+      setMessage("Please enter a destination");
+      return;
+    }
+
+    setSearching(true);
+    setMessage("Searching places...");
+    setSearchResults([]);
+    setSelectedDestination(null);
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          destinationQuery
+        )}&limit=5`
+      );
+
+      const data = await response.json();
+
+      const formatted = data.map((item) => ({
+        lat: Number(item.lat),
+        lng: Number(item.lon),
+        address: item.display_name,
+      }));
+
+      setSearchResults(formatted);
+      setMessage(formatted.length ? "Select a destination" : "No places found");
+    } catch (error) {
+      setMessage("Failed to search destination");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleSelectDestination = (place) => {
+    setSelectedDestination(place);
+    setSearchResults([]);
+    setMessage("Destination selected");
+  };
+
   const handleEstimate = async () => {
     if (!location || !selectedDestination) {
-      setMessage("Please choose a destination");
+      setMessage("Please search and select a destination");
       return;
     }
 
@@ -124,8 +145,6 @@ function Home() {
     setFinalResult(null);
 
     try {
-      const endLocation = destinations[selectedDestination];
-
       const response = await fetch(`${API_URL}/api/walking/trips`, {
         method: "POST",
         headers: {
@@ -138,7 +157,7 @@ function Home() {
             lng: location.lng,
             address: location.address || "Current Location",
           },
-          endLocation,
+          endLocation: selectedDestination,
         }),
       });
 
@@ -274,10 +293,6 @@ function Home() {
     navigate("/");
   };
 
-  const destinationData = selectedDestination
-    ? destinations[selectedDestination]
-    : null;
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
       <div
@@ -360,9 +375,9 @@ function Home() {
               <Popup>Current location</Popup>
             </Marker>
 
-            {destinationData && (
-              <Marker position={[destinationData.lat, destinationData.lng]}>
-                <Popup>{destinationData.address}</Popup>
+            {selectedDestination && (
+              <Marker position={[selectedDestination.lat, selectedDestination.lng]}>
+                <Popup>{selectedDestination.address}</Popup>
               </Marker>
             )}
           </MapContainer>
@@ -378,9 +393,11 @@ function Home() {
           boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
         }}
       >
-        <select
-          value={selectedDestination}
-          onChange={(e) => setSelectedDestination(e.target.value)}
+        <input
+          type="text"
+          placeholder="Search destination"
+          value={destinationQuery}
+          onChange={(e) => setDestinationQuery(e.target.value)}
           style={{
             width: "100%",
             padding: "14px",
@@ -390,17 +407,11 @@ function Home() {
             boxSizing: "border-box",
             marginBottom: "10px",
           }}
-        >
-          <option value="">Select destination</option>
-          {Object.keys(destinations).map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        />
 
         <button
-          onClick={handleEstimate}
+          onClick={handleSearchDestination}
+          disabled={searching}
           style={{
             width: "100%",
             padding: "14px",
@@ -411,6 +422,62 @@ function Home() {
             fontSize: "16px",
             fontWeight: "700",
             cursor: "pointer",
+          }}
+        >
+          {searching ? "Searching..." : "Search Destination"}
+        </button>
+
+        {searchResults.length > 0 && (
+          <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
+            {searchResults.map((place, index) => (
+              <button
+                key={index}
+                onClick={() => handleSelectDestination(place)}
+                style={{
+                  textAlign: "left",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "1px solid #ddd",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                {place.address}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {selectedDestination && (
+          <div
+            style={{
+              marginTop: "14px",
+              padding: "12px",
+              borderRadius: "12px",
+              background: "#f9f9f9",
+              border: "1px solid #eee",
+            }}
+          >
+            <p style={{ margin: 0, fontWeight: "600" }}>Selected Destination</p>
+            <p style={{ margin: "6px 0 0 0", fontSize: "14px", color: "#555" }}>
+              {selectedDestination.address}
+            </p>
+          </div>
+        )}
+
+        <button
+          onClick={handleEstimate}
+          style={{
+            width: "100%",
+            padding: "14px",
+            borderRadius: "12px",
+            border: "none",
+            backgroundColor: "#222",
+            color: "#fff",
+            fontSize: "16px",
+            fontWeight: "700",
+            cursor: "pointer",
+            marginTop: "12px",
           }}
         >
           Get Estimate
