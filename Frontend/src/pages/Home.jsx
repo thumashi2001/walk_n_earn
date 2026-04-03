@@ -41,6 +41,8 @@ function Home() {
   const [selectedDestination, setSelectedDestination] = useState("");
   const [estimate, setEstimate] = useState(null);
   const [tripId, setTripId] = useState(null);
+  const [tripStarted, setTripStarted] = useState(false);
+  const [finalResult, setFinalResult] = useState(null);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -72,6 +74,9 @@ function Home() {
 
     setMessage("Getting estimate...");
     setEstimate(null);
+    setTripId(null);
+    setTripStarted(false);
+    setFinalResult(null);
 
     try {
       const endLocation = destinations[selectedDestination];
@@ -104,6 +109,111 @@ function Home() {
       setMessage("Estimate ready");
     } catch (error) {
       setMessage("Something went wrong while getting estimate");
+    }
+  };
+
+  const handleStartTrip = () => {
+    setTripStarted(true);
+    setMessage("Trip started");
+  };
+
+  const handleEndTrip = async () => {
+    if (!tripId || !location) {
+      setMessage("Trip or location missing");
+      return;
+    }
+
+    setMessage("Ending trip...");
+
+    try {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const finalLocation = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            address: "Final Location",
+          };
+
+          const response = await fetch(
+            `http://localhost:5050/api/walking/trips/${tripId}/end`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                endLocation: finalLocation,
+              }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            setMessage(data.message || "Failed to end trip");
+            return;
+          }
+
+          setFinalResult(data.actual);
+          setMessage("Trip completed successfully");
+          setTripStarted(false);
+
+          const updatedUser = {
+            ...user,
+            totalPoints: (user.totalPoints || 0) + data.actual.points,
+            totalCo2SavedKg:
+              (user.totalCo2SavedKg || 0) + data.actual.co2SavedKg,
+            totalDistanceKm:
+              (user.totalDistanceKm || 0) + data.actual.distanceKm,
+          };
+
+          localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
+        },
+        async () => {
+          const fallbackFinalLocation = {
+            lat: location.lat + 0.001,
+            lng: location.lng + 0.001,
+            address: "Final Location",
+          };
+
+          const response = await fetch(
+            `http://localhost:5050/api/walking/trips/${tripId}/end`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                endLocation: fallbackFinalLocation,
+              }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            setMessage(data.message || "Failed to end trip");
+            return;
+          }
+
+          setFinalResult(data.actual);
+          setMessage("Trip completed successfully");
+          setTripStarted(false);
+
+          const updatedUser = {
+            ...user,
+            totalPoints: (user.totalPoints || 0) + data.actual.points,
+            totalCo2SavedKg:
+              (user.totalCo2SavedKg || 0) + data.actual.co2SavedKg,
+            totalDistanceKm:
+              (user.totalDistanceKm || 0) + data.actual.distanceKm,
+          };
+
+          localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
+        }
+      );
+    } catch (error) {
+      setMessage("Something went wrong while ending trip");
     }
   };
 
@@ -181,8 +291,68 @@ function Home() {
           <p style={{ margin: "6px 0" }}>Distance: {estimate.distanceKm} km</p>
           <p style={{ margin: "6px 0" }}>CO₂ Saved: {estimate.co2SavedKg} kg</p>
           <p style={{ margin: "6px 0" }}>Points: {estimate.points}</p>
-          <p style={{ margin: "6px 0", fontSize: "12px", color: "#666" }}>
-            Trip ID: {tripId}
+
+          {!tripStarted && !finalResult && (
+            <button
+              onClick={handleStartTrip}
+              style={{
+                marginTop: "10px",
+                width: "100%",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "none",
+                backgroundColor: "#edaf5e",
+                color: "#222",
+                fontSize: "16px",
+                fontWeight: "700",
+                cursor: "pointer",
+              }}
+            >
+              Start Trip
+            </button>
+          )}
+        </div>
+      )}
+
+      {tripStarted && (
+        <button
+          onClick={handleEndTrip}
+          style={{
+            marginBottom: "14px",
+            width: "100%",
+            padding: "14px",
+            borderRadius: "12px",
+            border: "none",
+            backgroundColor: "#222",
+            color: "#fff",
+            fontSize: "16px",
+            fontWeight: "700",
+            cursor: "pointer",
+          }}
+        >
+          End Trip
+        </button>
+      )}
+
+      {finalResult && (
+        <div
+          style={{
+            marginBottom: "14px",
+            padding: "14px",
+            borderRadius: "14px",
+            background: "#eefaf0",
+            border: "1px solid #cde8d1",
+          }}
+        >
+          <h4 style={{ marginTop: 0, marginBottom: "10px" }}>Trip Result</h4>
+          <p style={{ margin: "6px 0" }}>
+            Actual Distance: {finalResult.distanceKm} km
+          </p>
+          <p style={{ margin: "6px 0" }}>
+            Actual CO₂ Saved: {finalResult.co2SavedKg} kg
+          </p>
+          <p style={{ margin: "6px 0" }}>
+            Points Earned: {finalResult.points}
           </p>
         </div>
       )}
