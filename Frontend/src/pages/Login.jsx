@@ -55,8 +55,6 @@ function Login() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      
-      {/* Top Navigation */}
       <div
         style={{
           display: "flex",
@@ -113,7 +111,13 @@ function Login() {
 
       <form onSubmit={handleLogin}>
         <div style={{ marginBottom: "14px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontWeight: "600",
+            }}
+          >
             Email
           </label>
           <input
@@ -129,12 +133,19 @@ function Login() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
+              boxSizing: "border-box",
             }}
           />
         </div>
 
         <div style={{ marginBottom: "18px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontWeight: "600",
+            }}
+          >
             Password
           </label>
           <input
@@ -150,6 +161,7 @@ function Login() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
+              boxSizing: "border-box",
             }}
           />
         </div>
@@ -174,14 +186,27 @@ function Login() {
       </form>
 
       {message && (
-        <p style={{ marginTop: "10px", textAlign: "center", color: "red" }}>
+        <p
+          style={{
+            marginTop: "10px",
+            textAlign: "center",
+            color: "red",
+          }}
+        >
           {message}
         </p>
       )}
 
       <p style={{ marginTop: "10px", textAlign: "center" }}>
         Don&apos;t have an account?{" "}
-        <Link to="/signup" style={{ color: "#edaf5e", fontWeight: "700" }}>
+        <Link
+          to="/signup"
+          style={{
+            color: "#edaf5e",
+            fontWeight: "700",
+            textDecoration: "none",
+          }}
+        >
           Sign up
         </Link>
       </p>

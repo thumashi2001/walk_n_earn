@@ -57,8 +57,6 @@ function Signup() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      
-      {/* Top Navigation */}
       <div
         style={{
           display: "flex",
@@ -100,7 +98,9 @@ function Signup() {
           🌍
         </div>
 
-        <h1 style={{ margin: 0, fontSize: "28px" }}>Create Account</h1>
+        <h1 style={{ margin: 0, fontSize: "28px", color: "#222" }}>
+          Create Account
+        </h1>
         <p style={{ marginTop: "8px", color: "#666", fontSize: "14px" }}>
           Join Walk n Earn and start earning points
         </p>
@@ -108,10 +108,19 @@ function Signup() {
 
       <form onSubmit={handleSignup}>
         <div style={{ marginBottom: "14px" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontWeight: "600",
+            }}
+          >
+            Full Name
+          </label>
           <input
             type="text"
             name="fullName"
-            placeholder="Full name"
+            placeholder="Enter full name"
             value={formData.fullName}
             onChange={handleChange}
             required
@@ -121,15 +130,25 @@ function Signup() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
+              boxSizing: "border-box",
             }}
           />
         </div>
 
         <div style={{ marginBottom: "14px" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontWeight: "600",
+            }}
+          >
+            Email
+          </label>
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Enter email"
             value={formData.email}
             onChange={handleChange}
             required
@@ -139,15 +158,25 @@ function Signup() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
+              boxSizing: "border-box",
             }}
           />
         </div>
 
         <div style={{ marginBottom: "18px" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontWeight: "600",
+            }}
+          >
+            Password
+          </label>
           <input
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder="Enter password"
             value={formData.password}
             onChange={handleChange}
             required
@@ -157,6 +186,7 @@ function Signup() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
+              boxSizing: "border-box",
             }}
           />
         </div>
@@ -170,6 +200,8 @@ function Signup() {
             borderRadius: "14px",
             border: "none",
             backgroundColor: "#edaf5e",
+            color: "#222",
+            fontSize: "16px",
             fontWeight: "700",
             cursor: "pointer",
           }}
@@ -183,7 +215,7 @@ function Signup() {
           style={{
             marginTop: "10px",
             textAlign: "center",
-            color: message.includes("success") ? "green" : "red",
+            color: message.toLowerCase().includes("success") ? "green" : "red",
           }}
         >
           {message}
@@ -192,7 +224,14 @@ function Signup() {
 
       <p style={{ textAlign: "center", marginTop: "10px" }}>
         Already have an account?{" "}
-        <Link to="/login" style={{ color: "#edaf5e", fontWeight: "700" }}>
+        <Link
+          to="/login"
+          style={{
+            color: "#edaf5e",
+            fontWeight: "700",
+            textDecoration: "none",
+          }}
+        >
           Login
         </Link>
       </p>
