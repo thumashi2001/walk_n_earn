@@ -47,7 +47,7 @@ function Signup() {
       setMessage("Account created successfully");
 
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 1000);
     } catch (error) {
       setMessage("Something went wrong while signing up");
@@ -56,20 +56,34 @@ function Signup() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      
+      {/* Top Navigation */}
       <div
         style={{
-          textAlign: "center",
-          marginBottom: "30px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            border: "none",
+            background: "#eee",
+            borderRadius: "10px",
+            padding: "6px 12px",
+            cursor: "pointer",
+            fontSize: "13px",
+          }}
+        >
+          ← Home
+        </button>
+
+        <span style={{ fontWeight: "700" }}>Walk n Earn</span>
+      </div>
+
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
         <div
           style={{
             width: "72px",
@@ -86,7 +100,7 @@ function Signup() {
           🌍
         </div>
 
-        <h1 style={{ margin: 0, fontSize: "30px", color: "#222" }}>Create Account</h1>
+        <h1 style={{ margin: 0, fontSize: "28px" }}>Create Account</h1>
         <p style={{ marginTop: "8px", color: "#666", fontSize: "14px" }}>
           Join Walk n Earn and start earning points
         </p>
@@ -94,13 +108,10 @@ function Signup() {
 
       <form onSubmit={handleSignup}>
         <div style={{ marginBottom: "14px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
-            Full Name
-          </label>
           <input
             type="text"
             name="fullName"
-            placeholder="Enter full name"
+            placeholder="Full name"
             value={formData.fullName}
             onChange={handleChange}
             required
@@ -110,19 +121,15 @@ function Signup() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
-              boxSizing: "border-box",
             }}
           />
         </div>
 
         <div style={{ marginBottom: "14px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
-            Email
-          </label>
           <input
             type="email"
             name="email"
-            placeholder="Enter email"
+            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
             required
@@ -132,19 +139,15 @@ function Signup() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
-              boxSizing: "border-box",
             }}
           />
         </div>
 
         <div style={{ marginBottom: "18px" }}>
-          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
-            Password
-          </label>
           <input
             type="password"
             name="password"
-            placeholder="Enter password"
+            placeholder="Password"
             value={formData.password}
             onChange={handleChange}
             required
@@ -154,7 +157,6 @@ function Signup() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
-              boxSizing: "border-box",
             }}
           />
         </div>
@@ -168,8 +170,6 @@ function Signup() {
             borderRadius: "14px",
             border: "none",
             backgroundColor: "#edaf5e",
-            color: "#222",
-            fontSize: "16px",
             fontWeight: "700",
             cursor: "pointer",
           }}
@@ -181,33 +181,18 @@ function Signup() {
       {message && (
         <p
           style={{
-            marginTop: "14px",
+            marginTop: "10px",
             textAlign: "center",
-            color: message.toLowerCase().includes("success") ? "green" : "red",
-            fontSize: "14px",
+            color: message.includes("success") ? "green" : "red",
           }}
         >
           {message}
         </p>
       )}
 
-      <p
-        style={{
-          marginTop: "18px",
-          textAlign: "center",
-          fontSize: "14px",
-          color: "#555",
-        }}
-      >
+      <p style={{ textAlign: "center", marginTop: "10px" }}>
         Already have an account?{" "}
-        <Link
-          to="/"
-          style={{
-            color: "#edaf5e",
-            fontWeight: "700",
-            textDecoration: "none",
-          }}
-        >
+        <Link to="/login" style={{ color: "#edaf5e", fontWeight: "700" }}>
           Login
         </Link>
       </p>

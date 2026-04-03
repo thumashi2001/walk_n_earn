@@ -4,8 +4,8 @@ import { API_URL } from "../config";
 import { useAuth } from "../context/AuthContext";
 
 function Login() {
-      const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -44,7 +44,7 @@ function Login() {
         return;
       }
 
-        login(data.user);
+      login(data.user);
       setLoading(false);
       navigate("/home");
     } catch (error) {
@@ -54,18 +54,37 @@ function Login() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      
+      {/* Top Navigation */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <button
+          onClick={() => navigate("/")}
+          style={{
+            border: "none",
+            background: "#eee",
+            borderRadius: "10px",
+            padding: "6px 12px",
+            cursor: "pointer",
+            fontSize: "13px",
+          }}
+        >
+          ← Home
+        </button>
+
+        <span style={{ fontWeight: "700" }}>Walk n Earn</span>
+      </div>
+
       <div
         style={{
           textAlign: "center",
-          marginBottom: "30px",
+          marginTop: "10px",
         }}
       >
         <div
@@ -84,7 +103,9 @@ function Login() {
           🚶
         </div>
 
-        <h1 style={{ margin: 0, fontSize: "30px", color: "#222" }}>Walk n Earn</h1>
+        <h1 style={{ margin: 0, fontSize: "30px", color: "#222" }}>
+          Walk n Earn
+        </h1>
         <p style={{ marginTop: "8px", color: "#666", fontSize: "14px" }}>
           Login and start your walking journey
         </p>
@@ -108,7 +129,6 @@ function Login() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
-              boxSizing: "border-box",
             }}
           />
         </div>
@@ -130,7 +150,6 @@ function Login() {
               borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
-              boxSizing: "border-box",
             }}
           />
         </div>
@@ -155,35 +174,14 @@ function Login() {
       </form>
 
       {message && (
-        <p
-          style={{
-            marginTop: "14px",
-            textAlign: "center",
-            color: "red",
-            fontSize: "14px",
-          }}
-        >
+        <p style={{ marginTop: "10px", textAlign: "center", color: "red" }}>
           {message}
         </p>
       )}
 
-      <p
-        style={{
-          marginTop: "18px",
-          textAlign: "center",
-          fontSize: "14px",
-          color: "#555",
-        }}
-      >
+      <p style={{ marginTop: "10px", textAlign: "center" }}>
         Don&apos;t have an account?{" "}
-        <Link
-          to="/signup"
-          style={{
-            color: "#edaf5e",
-            fontWeight: "700",
-            textDecoration: "none",
-          }}
-        >
+        <Link to="/signup" style={{ color: "#edaf5e", fontWeight: "700" }}>
           Sign up
         </Link>
       </p>
