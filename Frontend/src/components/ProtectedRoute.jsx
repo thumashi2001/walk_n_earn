@@ -1,7 +1,8 @@
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function ProtectedRoute({ children }) {
-  const user = JSON.parse(localStorage.getItem("walknEarnUser"));
+  const { user } = useAuth();
 
   if (!user) {
     return <Navigate to="/" replace />;

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
+      const { login } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -42,7 +44,7 @@ function Login() {
         return;
       }
 
-      localStorage.setItem("walknEarnUser", JSON.stringify(data.user));
+        login(data.user);
       setLoading(false);
       navigate("/home");
     } catch (error) {

@@ -3,9 +3,10 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
-  const user = JSON.parse(localStorage.getItem("walknEarnUser"));
+  const { user } = useAuth();
 
   return (
     <div
