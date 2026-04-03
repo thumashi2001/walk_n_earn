@@ -312,7 +312,7 @@ function Home() {
           }}
         >
           <div>
-            <h2 style={{ margin: 0 }}>Walk n Earn</h2>
+            <h2 style={{ margin: 0 }}>Walk & Earn</h2>
             <p style={{ margin: "6px 0 0 0", fontSize: "14px" }}>
               Hi, {user?.fullName}
             </p>
@@ -473,9 +473,12 @@ function Home() {
           </div>
         )}
 
-        <button
-          onClick={handleEstimate}
-          style={{
+        <button 
+        onClick={handleEstimate}
+        disabled={tripStarted}
+        style={{
+            opacity: tripStarted ? 0.6 : 1,
+            cursor: tripStarted ? "not-allowed" : "pointer",
             width: "100%",
             padding: "14px",
             borderRadius: "12px",
@@ -484,12 +487,26 @@ function Home() {
             color: "#fff",
             fontSize: "16px",
             fontWeight: "700",
-            cursor: "pointer",
-            marginTop: "12px",
-          }}
+        }}
         >
           Get Estimate
         </button>
+
+        {tripStarted && (
+        <div
+            style={{
+            marginTop: "14px",
+            padding: "14px",
+            borderRadius: "14px",
+            background: "#fff3cd",
+            border: "1px solid #ffeeba",
+            }}
+        >
+            <p style={{ margin: 0, fontWeight: "600" }}>
+            Trip is in progress 🚶
+            </p>
+        </div>
+        )}
 
         {estimate && (
           <div
