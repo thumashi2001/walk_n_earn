@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -34,6 +35,7 @@ const destinations = {
 };
 
 function Home() {
+  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("walknEarnUser"));
 
   const [location, setLocation] = useState(null);
@@ -45,6 +47,11 @@ function Home() {
   const [finalResult, setFinalResult] = useState(null);
 
   useEffect(() => {
+    if (!user) {
+      navigate("/");
+      return;
+    }
+
     if (!navigator.geolocation) {
       setMessage("Using default location");
       setLocation({ lat: 6.906, lng: 79.9707, address: "Malabe" });
@@ -64,7 +71,7 @@ function Home() {
         setLocation({ lat: 6.906, lng: 79.9707, address: "Malabe" });
       }
     );
-  }, []);
+  }, [user, navigate]);
 
   const handleEstimate = async () => {
     if (!location || !selectedDestination) {
@@ -217,150 +224,79 @@ function Home() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("walknEarnUser");
+    navigate("/");
+  };
+
   const destinationData = selectedDestination
     ? destinations[selectedDestination]
     : null;
 
   return (
-    <div>
-      <h2 style={{ marginBottom: "6px" }}>Hi 👋</h2>
-      <p style={{ marginTop: 0, color: "#666" }}>{user?.fullName}</p>
-
-      {message && (
-        <p style={{ fontSize: "14px", color: "#666" }}>{message}</p>
-      )}
-
+    <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
       <div
         style={{
-          marginTop: "14px",
-          marginBottom: "14px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
+          background: "#edaf5e",
+          borderRadius: "18px",
+          padding: "16px",
+          color: "#222",
         }}
       >
-        <select
-          value={selectedDestination}
-          onChange={(e) => setSelectedDestination(e.target.value)}
+        <div
           style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: "12px",
-            border: "1px solid #ddd",
-            fontSize: "16px",
-            boxSizing: "border-box",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "start",
           }}
         >
-          <option value="">Select destination</option>
-          {Object.keys(destinations).map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+          <div>
+            <h2 style={{ margin: 0 }}>Walk n Earn</h2>
+            <p style={{ margin: "6px 0 0 0", fontSize: "14px" }}>
+              Hi, {user?.fullName}
+            </p>
+          </div>
 
-        <button
-          onClick={handleEstimate}
-          style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: "12px",
-            border: "none",
-            backgroundColor: "#edaf5e",
-            color: "#222",
-            fontSize: "16px",
-            fontWeight: "700",
-            cursor: "pointer",
-          }}
-        >
-          Get Estimate
-        </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              border: "none",
+              background: "#fff",
+              borderRadius: "10px",
+              padding: "8px 12px",
+              cursor: "pointer",
+              fontWeight: "600",
+            }}
+          >
+            Logout
+          </button>
+        </div>
+
+        <div style={{ marginTop: "12px", fontSize: "14px" }}>
+          <p style={{ margin: "4px 0" }}>Points: {user?.totalPoints || 0}</p>
+          <p style={{ margin: "4px 0" }}>
+            CO₂ Saved: {user?.totalCo2SavedKg || 0} kg
+          </p>
+        </div>
       </div>
 
-      {estimate && (
+      {message && (
         <div
           style={{
-            marginBottom: "14px",
-            padding: "14px",
-            borderRadius: "14px",
-            background: "#fff4e3",
-            border: "1px solid #f1d2a5",
-          }}
-        >
-          <h4 style={{ marginTop: 0, marginBottom: "10px" }}>Estimate</h4>
-          <p style={{ margin: "6px 0" }}>Distance: {estimate.distanceKm} km</p>
-          <p style={{ margin: "6px 0" }}>CO₂ Saved: {estimate.co2SavedKg} kg</p>
-          <p style={{ margin: "6px 0" }}>Points: {estimate.points}</p>
-
-          {!tripStarted && !finalResult && (
-            <button
-              onClick={handleStartTrip}
-              style={{
-                marginTop: "10px",
-                width: "100%",
-                padding: "14px",
-                borderRadius: "12px",
-                border: "none",
-                backgroundColor: "#edaf5e",
-                color: "#222",
-                fontSize: "16px",
-                fontWeight: "700",
-                cursor: "pointer",
-              }}
-            >
-              Start Trip
-            </button>
-          )}
-        </div>
-      )}
-
-      {tripStarted && (
-        <button
-          onClick={handleEndTrip}
-          style={{
-            marginBottom: "14px",
-            width: "100%",
-            padding: "14px",
+            background: "#f5f5f5",
+            padding: "12px",
             borderRadius: "12px",
-            border: "none",
-            backgroundColor: "#222",
-            color: "#fff",
-            fontSize: "16px",
-            fontWeight: "700",
-            cursor: "pointer",
+            fontSize: "14px",
           }}
         >
-          End Trip
-        </button>
-      )}
-
-      {finalResult && (
-        <div
-          style={{
-            marginBottom: "14px",
-            padding: "14px",
-            borderRadius: "14px",
-            background: "#eefaf0",
-            border: "1px solid #cde8d1",
-          }}
-        >
-          <h4 style={{ marginTop: 0, marginBottom: "10px" }}>Trip Result</h4>
-          <p style={{ margin: "6px 0" }}>
-            Actual Distance: {finalResult.distanceKm} km
-          </p>
-          <p style={{ margin: "6px 0" }}>
-            Actual CO₂ Saved: {finalResult.co2SavedKg} kg
-          </p>
-          <p style={{ margin: "6px 0" }}>
-            Points Earned: {finalResult.points}
-          </p>
+          {message}
         </div>
       )}
 
       {location && (
         <div
           style={{
-            borderRadius: "16px",
+            borderRadius: "18px",
             overflow: "hidden",
             border: "1px solid #eee",
           }}
@@ -388,7 +324,133 @@ function Home() {
         </div>
       )}
 
-      {!location && <p>Loading map...</p>}
+      <div
+        style={{
+          background: "#fff",
+          border: "1px solid #eee",
+          borderRadius: "18px",
+          padding: "16px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+        }}
+      >
+        <select
+          value={selectedDestination}
+          onChange={(e) => setSelectedDestination(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "14px",
+            borderRadius: "12px",
+            border: "1px solid #ddd",
+            fontSize: "16px",
+            boxSizing: "border-box",
+            marginBottom: "10px",
+          }}
+        >
+          <option value="">Select destination</option>
+          {Object.keys(destinations).map((name) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+
+        <button
+          onClick={handleEstimate}
+          style={{
+            width: "100%",
+            padding: "14px",
+            borderRadius: "12px",
+            border: "none",
+            backgroundColor: "#edaf5e",
+            color: "#222",
+            fontSize: "16px",
+            fontWeight: "700",
+            cursor: "pointer",
+          }}
+        >
+          Get Estimate
+        </button>
+
+        {estimate && (
+          <div
+            style={{
+              marginTop: "14px",
+              padding: "14px",
+              borderRadius: "14px",
+              background: "#fff4e3",
+              border: "1px solid #f1d2a5",
+            }}
+          >
+            <h4 style={{ marginTop: 0, marginBottom: "10px" }}>Estimate</h4>
+            <p style={{ margin: "6px 0" }}>Distance: {estimate.distanceKm} km</p>
+            <p style={{ margin: "6px 0" }}>CO₂ Saved: {estimate.co2SavedKg} kg</p>
+            <p style={{ margin: "6px 0" }}>Points: {estimate.points}</p>
+
+            {!tripStarted && !finalResult && (
+              <button
+                onClick={handleStartTrip}
+                style={{
+                  marginTop: "10px",
+                  width: "100%",
+                  padding: "14px",
+                  borderRadius: "12px",
+                  border: "none",
+                  backgroundColor: "#222",
+                  color: "#fff",
+                  fontSize: "16px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                }}
+              >
+                Start Trip
+              </button>
+            )}
+          </div>
+        )}
+
+        {tripStarted && (
+          <button
+            onClick={handleEndTrip}
+            style={{
+              marginTop: "14px",
+              width: "100%",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "none",
+              backgroundColor: "#d9534f",
+              color: "#fff",
+              fontSize: "16px",
+              fontWeight: "700",
+              cursor: "pointer",
+            }}
+          >
+            End Trip
+          </button>
+        )}
+
+        {finalResult && (
+          <div
+            style={{
+              marginTop: "14px",
+              padding: "14px",
+              borderRadius: "14px",
+              background: "#eefaf0",
+              border: "1px solid #cde8d1",
+            }}
+          >
+            <h4 style={{ marginTop: 0, marginBottom: "10px" }}>Trip Result</h4>
+            <p style={{ margin: "6px 0" }}>
+              Actual Distance: {finalResult.distanceKm} km
+            </p>
+            <p style={{ margin: "6px 0" }}>
+              Actual CO₂ Saved: {finalResult.co2SavedKg} kg
+            </p>
+            <p style={{ margin: "6px 0" }}>
+              Points Earned: {finalResult.points}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
