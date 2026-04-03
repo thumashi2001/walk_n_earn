@@ -1,9 +1,12 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const user = JSON.parse(localStorage.getItem("walknEarnUser"));
+
   return (
     <div
       style={{
@@ -27,9 +30,22 @@ function App() {
       >
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/home" element={<Home />} />
+            <Route
+              path="/"
+              element={user ? <Navigate to="/home" replace /> : <Login />}
+            />
+            <Route
+              path="/signup"
+              element={user ? <Navigate to="/home" replace /> : <Signup />}
+            />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </div>
