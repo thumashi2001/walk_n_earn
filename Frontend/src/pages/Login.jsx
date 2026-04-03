@@ -42,9 +42,7 @@ function Login() {
       }
 
       localStorage.setItem("walknEarnUser", JSON.stringify(data.user));
-      setMessage("Login successful");
       setLoading(false);
-
       navigate("/home");
     } catch (error) {
       setMessage("Something went wrong while logging in");
@@ -61,50 +59,50 @@ function Login() {
         justifyContent: "center",
       }}
     >
-      <div style={{ marginBottom: "30px" }}>
-        <h1
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "30px",
+        }}
+      >
+        <div
           style={{
-            margin: 0,
-            fontSize: "32px",
-            color: "#222",
+            width: "72px",
+            height: "72px",
+            margin: "0 auto 16px auto",
+            borderRadius: "20px",
+            backgroundColor: "#edaf5e",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "30px",
           }}
         >
-          Walk n Earn
-        </h1>
-        <p
-          style={{
-            marginTop: "8px",
-            color: "#666",
-            fontSize: "14px",
-          }}
-        >
-          Walk more, earn more, save CO₂.
+          🚶
+        </div>
+
+        <h1 style={{ margin: 0, fontSize: "30px", color: "#222" }}>Walk n Earn</h1>
+        <p style={{ marginTop: "8px", color: "#666", fontSize: "14px" }}>
+          Login and start your walking journey
         </p>
       </div>
 
       <form onSubmit={handleLogin}>
-        <div style={{ marginBottom: "16px" }}>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "14px",
-              fontWeight: "600",
-            }}
-          >
+        <div style={{ marginBottom: "14px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
             Email
           </label>
           <input
             type="email"
             name="email"
-            placeholder="Enter your email"
+            placeholder="Enter email"
             value={formData.email}
             onChange={handleChange}
             required
             style={{
               width: "100%",
               padding: "14px",
-              borderRadius: "12px",
+              borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
               boxSizing: "border-box",
@@ -112,28 +110,21 @@ function Login() {
           />
         </div>
 
-        <div style={{ marginBottom: "20px" }}>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "14px",
-              fontWeight: "600",
-            }}
-          >
+        <div style={{ marginBottom: "18px" }}>
+          <label style={{ display: "block", marginBottom: "8px", fontWeight: "600" }}>
             Password
           </label>
           <input
             type="password"
             name="password"
-            placeholder="Enter your password"
+            placeholder="Enter password"
             value={formData.password}
             onChange={handleChange}
             required
             style={{
               width: "100%",
               padding: "14px",
-              borderRadius: "12px",
+              borderRadius: "14px",
               border: "1px solid #ddd",
               fontSize: "16px",
               boxSizing: "border-box",
@@ -147,8 +138,8 @@ function Login() {
           style={{
             width: "100%",
             padding: "14px",
-            border: "none",
             borderRadius: "14px",
+            border: "none",
             backgroundColor: "#edaf5e",
             color: "#222",
             fontSize: "16px",
@@ -163,9 +154,10 @@ function Login() {
       {message && (
         <p
           style={{
-            marginTop: "16px",
+            marginTop: "14px",
+            textAlign: "center",
+            color: "red",
             fontSize: "14px",
-            color: message.toLowerCase().includes("successful") ? "green" : "red",
           }}
         >
           {message}
@@ -174,7 +166,7 @@ function Login() {
 
       <p
         style={{
-          marginTop: "20px",
+          marginTop: "18px",
           textAlign: "center",
           fontSize: "14px",
           color: "#555",
