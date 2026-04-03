@@ -105,6 +105,22 @@ function Landing() {
             Create Account
           </button>
         </Link>
+        <Link to="/about" style={{ textDecoration: "none" }}>
+  <button
+    style={{
+      width: "100%",
+      padding: "12px",
+      borderRadius: "12px",
+      border: "none",
+      backgroundColor: "#222",
+      color: "#fff",
+      fontSize: "14px",
+      cursor: "pointer",
+    }}
+  >
+    About Us
+  </button>
+</Link>
       </div>
     </div>
   );

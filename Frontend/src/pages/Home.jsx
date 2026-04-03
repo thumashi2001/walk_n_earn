@@ -423,7 +423,8 @@ function Home() {
             fontSize: "16px",
             fontWeight: "700",
             cursor: "pointer",
-          }}
+            marginBottom: "12px"   // ADD THIS
+            }}
         >
           {searching ? "Searching..." : "Search Destination"}
         </button>

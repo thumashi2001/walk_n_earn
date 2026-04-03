@@ -5,6 +5,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
+import About from "./pages/About";
 
 function App() {
   const { user } = useAuth();
@@ -52,6 +53,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/about" element={<About />} />
           </Routes>
         </BrowserRouter>
       </div>
