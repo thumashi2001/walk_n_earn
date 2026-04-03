@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
+import { useAuth } from "../context/AuthContext";
 import L from "leaflet";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,9 +15,8 @@ L.Icon.Default.mergeOptions({
 
 function Home() {
   const navigate = useNavigate();
-  const savedUser = JSON.parse(localStorage.getItem("walknEarnUser"));
+  const { user, setUser, logout } = useAuth();
 
-  const [user, setUser] = useState(savedUser);
   const [location, setLocation] = useState(null);
   const [message, setMessage] = useState("");
   const [destinationQuery, setDestinationQuery] = useState("");
@@ -30,14 +30,13 @@ function Home() {
   const [searching, setSearching] = useState(false);
 
   const loadUser = async () => {
-    if (!savedUser?._id) return;
+    if (!user?._id) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/users/${savedUser._id}`);
+      const response = await fetch(`${API_URL}/api/users/${user._id}`);
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("walknEarnUser", JSON.stringify(data));
         setUser(data);
       }
     } catch (error) {
@@ -46,11 +45,11 @@ function Home() {
   };
 
   const loadTrips = async () => {
-    if (!savedUser?._id) return;
+    if (!user?._id) return;
 
     try {
       const response = await fetch(
-        `${API_URL}/api/walking/trips?userId=${savedUser._id}`
+        `${API_URL}/api/walking/trips?userId=${user._id}`
       );
       const data = await response.json();
 
@@ -63,7 +62,7 @@ function Home() {
   };
 
   useEffect(() => {
-    if (!savedUser) {
+    if (!user) {
       navigate("/");
       return;
     }
@@ -86,10 +85,14 @@ function Home() {
         }
       );
     }
+  }, [user, navigate]);
 
-    loadUser();
-    loadTrips();
-  }, [navigate]);
+  useEffect(() => {
+    if (user?._id) {
+      loadUser();
+      loadTrips();
+    }
+  }, [user?._id]);
 
   const handleSearchDestination = async () => {
     if (!destinationQuery.trim()) {
@@ -232,7 +235,6 @@ function Home() {
               (user.totalDistanceKm || 0) + data.actual.distanceKm,
           };
 
-          localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
           setUser(updatedUser);
           loadUser();
           loadTrips();
@@ -277,7 +279,6 @@ function Home() {
               (user.totalDistanceKm || 0) + data.actual.distanceKm,
           };
 
-          localStorage.setItem("walknEarnUser", JSON.stringify(updatedUser));
           setUser(updatedUser);
           loadUser();
           loadTrips();
@@ -289,7 +290,7 @@ function Home() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("walknEarnUser");
+    logout();
     navigate("/");
   };
 
@@ -428,7 +429,14 @@ function Home() {
         </button>
 
         {searchResults.length > 0 && (
-          <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div
+            style={{
+              marginTop: "10px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+            }}
+          >
             {searchResults.map((place, index) => (
               <button
                 key={index}
