@@ -1,8 +1,6 @@
 const HealthAdvice = require("../../admin/models/HealthAdvice"); // Adjust path
 const { fetchCurrentWeather } = require("../services/weatherService"); // your existing service
 
-// Get Health Advice for Current Weather
-
 const getHealthAdviceForCurrentWeather = async (req, res) => {
   try {
     const { lat, lon } = req.query;
@@ -16,10 +14,33 @@ const getHealthAdviceForCurrentWeather = async (req, res) => {
     const currentWeather = await fetchCurrentWeather(lat, lon);
 
     // 2. Fetch active health advices from MongoDB
+    // "active: true" ensures we only get enabled advices
     const advices = await HealthAdvice.find({ active: true });
 
-    // 3. Filter advices that match the current weather
+    // 3. Get current time context for validity checks
+    const now = new Date();
+    // Format: "HH:mm" (e.g., "14:30")
+    const currentTimeStr = now.getHours().toString().padStart(2, '0') + ":" + 
+                           now.getMinutes().toString().padStart(2, '0');
+
+    // 4. Filter advices that match current time, date, and weather
     const matchingAdvice = advices.filter((advice) => {
+      
+      // --- A. DATE VALIDITY CHECK ---
+      // If a start date is set, check if we've reached it
+      if (advice.validFrom && now < new Date(advice.validFrom)) return false;
+      // If an end date is set, check if we've passed it
+      if (advice.validTo && now > new Date(advice.validTo)) return false;
+
+      // --- B. TIME OF DAY CHECK ---
+      // Only check if both timeStart and timeEnd are provided in the schema
+      if (advice.timeStart && advice.timeEnd) {
+        if (currentTimeStr < advice.timeStart || currentTimeStr > advice.timeEnd) {
+          return false;
+        }
+      }
+
+      // --- C. EXISTING WEATHER TRIGGER LOGIC ---
       const trigger = advice.trigger;
 
       switch (trigger.parameter) {
@@ -32,6 +53,7 @@ const getHealthAdviceForCurrentWeather = async (req, res) => {
           );
         }
         case "WeatherCondition":
+          // OpenWeather returns "weather_condition" in your service
           return trigger.exactValue === currentWeather.weather_condition;
         case "Humidity": {
           const min = trigger.range?.min ?? -Infinity;
@@ -47,10 +69,15 @@ const getHealthAdviceForCurrentWeather = async (req, res) => {
             currentWeather.wind_speed >= min && currentWeather.wind_speed <= max
           );
         }
+        default:
+          return false;
       }
     });
 
-    // 4. Send response
+    // 5. Optional: Sort by Priority (Priority 1 is highest)
+    matchingAdvice.sort((a, b) => a.priority - b.priority);
+
+    // 6. Send response
     res.json({
       success: true,
       currentWeather,
@@ -64,6 +91,5 @@ const getHealthAdviceForCurrentWeather = async (req, res) => {
       .json({ success: false, message: "Failed to fetch health advice" });
   }
 };
-
 
 module.exports = getHealthAdviceForCurrentWeather;
