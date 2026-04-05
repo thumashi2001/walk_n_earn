@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const navItems = [
   { to: "/", label: "Home", end: true },
@@ -19,6 +19,10 @@ function linkClassName({ isActive }) {
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  useLocation();
+  const isAdmin =
+    typeof window !== "undefined" &&
+    localStorage.getItem("role") === "admin";
 
   return (
     <header className="sticky top-0 z-40 mb-6">
@@ -39,6 +43,11 @@ export default function Navbar() {
                 {label}
               </NavLink>
             ))}
+            {isAdmin && (
+              <NavLink to="/admin" className={linkClassName}>
+                Admin
+              </NavLink>
+            )}
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -91,6 +100,15 @@ export default function Navbar() {
                 {label}
               </NavLink>
             ))}
+            {isAdmin && (
+              <NavLink
+                to="/admin"
+                className={linkClassName}
+                onClick={() => setMenuOpen(false)}
+              >
+                Admin
+              </NavLink>
+            )}
             <div className="mt-2 flex flex-col gap-2 border-t border-stone-100 pt-3">
               <NavLink
                 to="/login"

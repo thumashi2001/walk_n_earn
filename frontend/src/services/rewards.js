@@ -1,6 +1,37 @@
 import axios from "axios";
 import API from "./api";
 
+/** @returns {Promise<any[]>} */
+export async function fetchRewardsList() {
+  const { data } = await API.get("/rewards");
+  return Array.isArray(data) ? data : [];
+}
+
+/**
+ * @param {Record<string, unknown>} payload
+ */
+export async function createRewardAdmin(payload) {
+  const { data } = await API.post("/rewards", payload);
+  return data;
+}
+
+/**
+ * @param {string} id
+ * @param {Record<string, unknown>} payload
+ */
+export async function updateRewardAdmin(id, payload) {
+  const { data } = await API.put(`/rewards/${id}`, payload);
+  return data;
+}
+
+/**
+ * @param {string} id
+ */
+export async function deleteRewardAdmin(id) {
+  const { data } = await API.delete(`/rewards/${id}`);
+  return data;
+}
+
 /**
  * @param {string} rewardId
  */
