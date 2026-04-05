@@ -10,8 +10,8 @@ export default function AuthPageShell({ title, description, children, footer }) 
         aria-hidden
       />
 
-      <div className="relative w-full overflow-hidden rounded-3xl bg-white/95 shadow-xl shadow-stone-300/40 ring-1 ring-stone-200/80 backdrop-blur-sm">
-        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-700/80" />
+      <div className="relative w-full overflow-hidden rounded-3xl border border-white/70 bg-gradient-to-b from-white/98 to-amber-50/15 shadow-2xl shadow-stone-400/25 ring-1 ring-stone-200/60 backdrop-blur-md transition-shadow duration-500 hover:shadow-[0_25px_50px_-12px_rgba(120,53,15,0.12)]">
+        <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-800/90" />
 
         <div className="px-8 pb-10 pt-9 sm:px-10 sm:pb-12 sm:pt-10">
           <div className="mb-8 text-center">

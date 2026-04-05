@@ -11,10 +11,18 @@ import Admin from "./pages/Admin";
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-b from-[#faf7f0] via-[#fffefb] to-[#f5f0e8] px-4 pb-12 pt-4 sm:px-6">
-        <div className="mx-auto max-w-6xl">
+      <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#faf7f0] via-[#fffefb] to-[#f3eee4] px-4 pb-12 pt-4 sm:px-6">
+        <div
+          className="pointer-events-none fixed inset-0 -z-10"
+          aria-hidden
+        >
+          <div className="absolute left-[10%] top-[-10%] h-[28rem] w-[28rem] rounded-full bg-gradient-to-br from-amber-200/35 via-amber-100/20 to-transparent blur-3xl" />
+          <div className="absolute bottom-[-5%] right-[-5%] h-[22rem] w-[22rem] rounded-full bg-gradient-to-tl from-stone-300/25 via-amber-50/20 to-transparent blur-3xl" />
+          <div className="absolute bottom-1/3 left-1/2 h-64 w-96 -translate-x-1/2 rounded-full bg-white/40 blur-3xl" />
+        </div>
+        <div className="relative mx-auto max-w-6xl">
           <Navbar />
-          <main>
+          <main className="min-h-[50vh]">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />

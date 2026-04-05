@@ -10,11 +10,11 @@ const navItems = [
 
 function linkClassName({ isActive }) {
   const base =
-    "rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200";
+    "rounded-full px-3 py-2 text-sm font-medium transition-all duration-300 ease-out";
   if (isActive) {
-    return `${base} bg-amber-100/90 text-amber-900 shadow-sm ring-1 ring-amber-200/60`;
+    return `${base} bg-gradient-to-b from-amber-100/95 to-amber-50/90 text-amber-950 shadow-md shadow-amber-900/10 ring-1 ring-amber-200/70`;
   }
-  return `${base} text-stone-600 hover:bg-white/80 hover:text-stone-800`;
+  return `${base} text-stone-600 hover:bg-white/90 hover:text-stone-900 hover:shadow-sm hover:shadow-stone-200/50`;
 }
 
 export default function Navbar() {
@@ -26,12 +26,12 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 mb-6">
-      <nav className="rounded-2xl bg-white/95 px-4 py-3 shadow-md shadow-stone-200/70 ring-1 ring-stone-100 backdrop-blur-sm sm:px-6">
+      <nav className="rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-lg shadow-stone-300/25 ring-1 ring-stone-200/60 backdrop-blur-md transition-shadow duration-500 hover:shadow-xl hover:shadow-stone-300/30 sm:px-6">
         <div className="flex items-center justify-between gap-4">
           <NavLink
             to="/"
             end
-            className="shrink-0 text-lg font-semibold tracking-tight text-amber-900"
+            className="shrink-0 text-lg font-semibold tracking-tight text-amber-900 transition-all duration-300 hover:text-amber-950 hover:drop-shadow-sm active:scale-[0.98]"
             onClick={() => setMenuOpen(false)}
           >
             Walk n Earn
@@ -57,10 +57,10 @@ export default function Navbar() {
             <NavLink
               to="/signup"
               className={({ isActive }) =>
-                `rounded-full px-4 py-2 text-sm font-semibold transition-shadow duration-200 ${
+                `rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out active:scale-[0.97] ${
                   isActive
-                    ? "bg-amber-800 text-white shadow-md shadow-amber-900/20 ring-2 ring-amber-700/30"
-                    : "bg-amber-700 text-white shadow-sm hover:bg-amber-800 hover:shadow-md"
+                    ? "bg-gradient-to-b from-amber-800 to-amber-900 text-white shadow-lg shadow-amber-900/35 ring-2 ring-amber-700/40"
+                    : "bg-gradient-to-b from-amber-600 to-amber-800 text-white shadow-md shadow-amber-900/25 hover:from-amber-700 hover:to-amber-900 hover:shadow-lg"
                 }`
               }
             >
@@ -70,7 +70,7 @@ export default function Navbar() {
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 text-stone-700 shadow-sm ring-1 ring-stone-200/80 md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b from-stone-50 to-stone-100/90 text-stone-700 shadow-md shadow-stone-300/20 ring-1 ring-stone-200/80 transition-all duration-300 hover:shadow-lg active:scale-95 md:hidden"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((o) => !o)}
@@ -120,10 +120,10 @@ export default function Navbar() {
               <NavLink
                 to="/signup"
                 className={({ isActive }) =>
-                  `rounded-xl px-3 py-2.5 text-center text-sm font-semibold ${
+                  `rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition-all duration-300 active:scale-[0.98] ${
                     isActive
-                      ? "bg-amber-800 text-white shadow-md"
-                      : "bg-amber-700 text-white shadow-sm hover:bg-amber-800"
+                      ? "bg-gradient-to-b from-amber-800 to-amber-900 text-white shadow-lg shadow-amber-900/30"
+                      : "bg-gradient-to-b from-amber-600 to-amber-800 text-white shadow-md hover:from-amber-700 hover:to-amber-900 hover:shadow-lg"
                   }`
                 }
                 onClick={() => setMenuOpen(false)}

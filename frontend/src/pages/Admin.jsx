@@ -92,8 +92,8 @@ function AdminDashboard() {
   const activeCount = rewards.filter((r) => r.isActive !== false).length;
 
   return (
-    <div className="space-y-6">
-      <header className="rounded-3xl border border-stone-100 bg-white/95 px-6 py-8 shadow-lg shadow-stone-200/60 ring-1 ring-stone-100 sm:px-8">
+    <div className="space-y-5 sm:space-y-6">
+      <header className="rounded-3xl border border-white/60 bg-gradient-to-br from-white/98 via-white/95 to-amber-50/30 px-5 py-7 shadow-xl shadow-stone-300/25 ring-1 ring-stone-200/50 backdrop-blur-sm transition-shadow duration-500 hover:shadow-2xl sm:px-8 sm:py-9">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-800/80">
@@ -109,29 +109,30 @@ function AdminDashboard() {
           </div>
           <motion.button
             type="button"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             onClick={openCreate}
-            className="shrink-0 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-800 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/25 transition hover:from-amber-700 hover:to-amber-900"
+            className="shrink-0 rounded-2xl bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/35 transition-all duration-300 hover:from-amber-700 hover:via-amber-800 hover:to-amber-900 hover:shadow-xl"
           >
             + Add reward
           </motion.button>
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl bg-amber-50/90 px-4 py-3 ring-1 ring-amber-200/50">
+          <div className="rounded-2xl bg-gradient-to-br from-amber-50/95 to-amber-100/40 px-4 py-3 shadow-md shadow-amber-900/5 ring-1 ring-amber-200/55 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
             <p className="text-xs font-medium text-amber-900/70">Total rewards</p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-amber-950">
               {rewards.length}
             </p>
           </div>
-          <div className="rounded-2xl bg-white/90 px-4 py-3 ring-1 ring-stone-200/80">
+          <div className="rounded-2xl border border-stone-100/80 bg-gradient-to-br from-white to-stone-50/40 px-4 py-3 shadow-md shadow-stone-300/20 ring-1 ring-stone-200/60 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
             <p className="text-xs font-medium text-stone-500">Active</p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-stone-900">
               {activeCount}
             </p>
           </div>
-          <div className="col-span-2 rounded-2xl bg-stone-50/90 px-4 py-3 ring-1 ring-stone-200/60 sm:col-span-1">
+          <div className="col-span-2 rounded-2xl bg-gradient-to-br from-stone-50/95 to-stone-100/50 px-4 py-3 shadow-md shadow-stone-400/10 ring-1 ring-stone-200/55 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg sm:col-span-1">
             <p className="text-xs font-medium text-stone-500">Inactive</p>
             <p className="mt-1 text-2xl font-bold tabular-nums text-stone-700">
               {rewards.length - activeCount}
@@ -144,14 +145,14 @@ function AdminDashboard() {
         <motion.div
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-emerald-200/80 bg-emerald-50/90 px-4 py-3 text-sm font-medium text-emerald-900 ring-1 ring-emerald-100"
+          className="rounded-2xl border border-emerald-200/80 bg-gradient-to-r from-emerald-50/95 to-emerald-50/70 px-4 py-3 text-sm font-medium text-emerald-900 shadow-md shadow-emerald-900/10 ring-1 ring-emerald-100"
           role="status"
         >
           {flash.text}
         </motion.div>
       )}
 
-      <section className="overflow-hidden rounded-3xl border border-stone-100 bg-white/95 shadow-lg shadow-stone-200/50 ring-1 ring-stone-100">
+      <section className="overflow-hidden rounded-3xl border border-stone-200/40 bg-gradient-to-b from-white/98 to-amber-50/20 shadow-xl shadow-stone-300/20 ring-1 ring-stone-100/80 backdrop-blur-sm transition-shadow duration-500 hover:shadow-2xl">
         {loading && (
           <div className="flex flex-col items-center justify-center gap-3 py-20">
             <span className="h-10 w-10 animate-spin rounded-full border-2 border-amber-200 border-t-amber-700" />
@@ -175,7 +176,7 @@ function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead>
-                <tr className="border-b border-stone-200/80 bg-gradient-to-r from-amber-50/50 to-transparent">
+                <tr className="border-b border-stone-200/80 bg-gradient-to-r from-amber-50/60 via-amber-50/25 to-transparent">
                   <th className="px-4 py-3 font-semibold text-stone-700 sm:px-6">
                     Image
                   </th>
@@ -200,10 +201,10 @@ function AdminDashboard() {
                 {rewards.map((r) => (
                   <tr
                     key={r._id}
-                    className="transition-colors hover:bg-amber-50/30"
+                    className="transition-colors duration-200 ease-out hover:bg-gradient-to-r hover:from-amber-50/40 hover:to-transparent"
                   >
                     <td className="px-4 py-3 sm:px-6">
-                      <div className="h-14 w-20 overflow-hidden rounded-xl bg-stone-100 ring-1 ring-stone-200/80">
+                      <div className="h-14 w-20 overflow-hidden rounded-xl bg-stone-100 shadow-sm ring-1 ring-stone-200/80 transition-transform duration-300 ease-out hover:scale-105 hover:shadow-md">
                         <img
                           src={getRewardImageUrl(r)}
                           alt=""
@@ -232,10 +233,10 @@ function AdminDashboard() {
                     </td>
                     <td className="px-4 py-3 sm:px-6">
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-sm transition-shadow duration-200 ${
                           r.isActive !== false
-                            ? "bg-emerald-100 text-emerald-900 ring-1 ring-emerald-200/60"
-                            : "bg-stone-200/80 text-stone-600 ring-1 ring-stone-300/50"
+                            ? "bg-gradient-to-b from-emerald-100 to-emerald-50/90 text-emerald-900 ring-1 ring-emerald-200/60"
+                            : "bg-gradient-to-b from-stone-200/90 to-stone-100/80 text-stone-600 ring-1 ring-stone-300/50"
                         }`}
                       >
                         {r.isActive !== false ? "Active" : "Hidden"}
@@ -245,14 +246,14 @@ function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => openEdit(r)}
-                        className="mr-2 rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 ring-1 ring-amber-200/80 transition hover:bg-amber-50"
+                        className="mr-2 rounded-xl bg-gradient-to-b from-white to-amber-50/30 px-3 py-1.5 text-xs font-semibold text-amber-900 shadow-sm ring-1 ring-amber-200/80 transition-all duration-200 hover:-translate-y-px hover:bg-amber-50 hover:shadow-md active:scale-95"
                       >
                         Edit
                       </button>
                       <button
                         type="button"
                         onClick={() => setDeletingReward(r)}
-                        className="rounded-xl bg-white px-3 py-1.5 text-xs font-semibold text-red-700 ring-1 ring-red-200/80 transition hover:bg-red-50"
+                        className="rounded-xl bg-gradient-to-b from-white to-red-50/20 px-3 py-1.5 text-xs font-semibold text-red-700 shadow-sm ring-1 ring-red-200/80 transition-all duration-200 hover:-translate-y-px hover:bg-red-50 hover:shadow-md active:scale-95"
                       >
                         Delete
                       </button>

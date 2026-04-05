@@ -17,7 +17,7 @@ function RewardImage({ src, title }) {
         <img
           src={src}
           alt={title}
-          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
           onError={() => setFailed(true)}
         />
       ) : (
@@ -88,17 +88,17 @@ export default function RewardCard({ reward, onRedeemed }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{
-        y: -6,
-        transition: { duration: 0.22, ease: "easeOut" },
+        y: -8,
+        transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
       }}
-      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-3xl bg-white/95 shadow-md shadow-stone-200/60 ring-1 ring-stone-200/70 backdrop-blur-sm"
+      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-white/50 bg-gradient-to-b from-white/98 to-amber-50/30 shadow-lg shadow-stone-300/25 ring-1 ring-stone-200/50 backdrop-blur-sm transition-shadow duration-500 ease-out hover:shadow-2xl hover:shadow-amber-900/12"
     >
       <div className="relative">
         <RewardImage src={imageUrl} title={reward.title} />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/15 via-transparent to-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/20 via-stone-900/5 to-transparent opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100" />
       </div>
 
-      <div className="flex flex-1 flex-col bg-gradient-to-b from-white to-amber-50/40 px-5 pb-5 pt-4">
+      <div className="flex flex-1 flex-col bg-gradient-to-b from-white/95 via-white to-amber-50/50 px-5 pb-5 pt-4">
         <h2 className="text-xl font-semibold leading-snug tracking-tight text-stone-900">
           {reward.title}
         </h2>
@@ -114,7 +114,7 @@ export default function RewardCard({ reward, onRedeemed }) {
         )}
 
         <dl className="mt-5 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-amber-50/95 px-3 py-3 ring-1 ring-amber-200/50">
+          <div className="rounded-2xl bg-gradient-to-br from-amber-50/98 to-amber-100/40 px-3 py-3 shadow-sm shadow-amber-900/5 ring-1 ring-amber-200/55 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md">
             <dt className="text-xs font-medium uppercase tracking-wide text-amber-900/60">
               Points
             </dt>
@@ -122,7 +122,7 @@ export default function RewardCard({ reward, onRedeemed }) {
               {reward.pointsRequired}
             </dd>
           </div>
-          <div className="rounded-2xl bg-white/95 px-3 py-3 ring-1 ring-stone-200/80">
+          <div className="rounded-2xl border border-stone-100/80 bg-gradient-to-br from-white to-stone-50/50 px-3 py-3 shadow-sm shadow-stone-300/15 ring-1 ring-stone-200/60 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md">
             <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">
               Available
             </dt>
@@ -162,16 +162,16 @@ export default function RewardCard({ reward, onRedeemed }) {
             layout
             whileHover={{
               scale: inStock && !redeeming ? 1.02 : 1,
-              transition: { duration: 0.2 },
+              transition: { duration: 0.25, ease: "easeOut" },
             }}
             whileTap={{
-              scale: inStock && !redeeming ? 0.98 : 1,
+              scale: inStock && !redeeming ? 0.97 : 1,
               transition: { duration: 0.15 },
             }}
             disabled={!inStock || redeeming}
             onClick={handleRedeem}
             aria-busy={redeeming}
-            className="w-full rounded-2xl bg-gradient-to-r from-amber-600 to-amber-800 py-3 text-sm font-semibold text-white shadow-md shadow-amber-900/20 transition hover:from-amber-700 hover:to-amber-900 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-2xl bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/30 transition-all duration-300 ease-out hover:from-amber-700 hover:via-amber-800 hover:to-amber-900 hover:shadow-xl hover:shadow-amber-950/25 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           >
             {redeeming ? (
               <span className="inline-flex items-center justify-center gap-2">

@@ -47,7 +47,7 @@ export default function Signup() {
           Already have an account?{" "}
           <Link
             to="/login"
-            className="font-semibold text-amber-900 underline-offset-2 hover:underline"
+            className="font-semibold text-amber-900 underline-offset-4 transition-all duration-300 hover:text-amber-950 hover:underline hover:decoration-amber-600/60"
           >
             Sign in
           </Link>
@@ -97,7 +97,7 @@ export default function Signup() {
           labelRight={
             <button
               type="button"
-              className="text-xs font-medium text-amber-800/90 hover:text-amber-950"
+              className="rounded-lg px-1.5 py-0.5 text-xs font-medium text-amber-800/90 transition-all duration-200 hover:bg-amber-100/60 hover:text-amber-950 active:scale-95"
               onClick={() => setShowPassword((v) => !v)}
             >
               {showPassword ? "Hide" : "Show"}

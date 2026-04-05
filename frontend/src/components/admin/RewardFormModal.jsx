@@ -112,23 +112,24 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
           <motion.button
             type="button"
             aria-label="Close dialog"
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-gradient-to-b from-stone-900/45 to-stone-900/55 backdrop-blur-md transition-opacity"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={onClose}
           />
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-labelledby="reward-form-title"
-            className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-[#fffefb] shadow-2xl shadow-stone-400/30 ring-1 ring-stone-200/90"
-            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/80 bg-gradient-to-b from-[#fffefb] to-amber-50/25 shadow-[0_25px_60px_-15px_rgba(28,25,23,0.25)] ring-1 ring-stone-200/70"
+            initial={{ opacity: 0, scale: 0.96, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 12 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
+            exit={{ opacity: 0, scale: 0.96, y: 16 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone-100 bg-gradient-to-r from-amber-50/90 to-white/95 px-6 py-4 backdrop-blur-sm">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone-100/80 bg-gradient-to-r from-amber-50/95 via-white/90 to-amber-50/30 px-6 py-4 shadow-sm shadow-stone-200/30 backdrop-blur-md">
               <h2
                 id="reward-form-title"
                 className="text-lg font-semibold text-stone-900"
@@ -138,7 +139,7 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl p-2 text-stone-500 transition hover:bg-stone-100 hover:text-stone-800"
+                className="rounded-xl p-2 text-stone-500 transition-all duration-200 hover:bg-stone-100 hover:text-stone-800 active:scale-95"
                 aria-label="Close"
               >
                 ×
@@ -147,7 +148,7 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
 
             <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
               {error && (
-                <div className="rounded-2xl border border-red-200/80 bg-red-50/90 px-4 py-3 text-sm text-red-800 ring-1 ring-red-100">
+                <div className="rounded-2xl border border-red-200/80 bg-gradient-to-b from-red-50/95 to-red-50/70 px-4 py-3 text-sm text-red-800 shadow-sm shadow-red-900/5 ring-1 ring-red-100">
                   {error}
                 </div>
               )}
@@ -174,7 +175,7 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
                   rows={3}
                   value={form.description}
                   onChange={(e) => update("description", e.target.value)}
-                  className={`mt-1.5 min-h-[88px] w-full resize-y rounded-2xl border border-stone-200 bg-[#fffefb] px-4 py-3 text-stone-900 shadow-inner shadow-stone-100/80 outline-none transition placeholder:text-stone-400 focus:border-amber-300 focus:ring-2 focus:ring-amber-200/60`}
+                  className={`mt-1.5 min-h-[88px] w-full resize-y rounded-2xl border border-stone-200/90 bg-[#fffefb] px-4 py-3 text-stone-900 shadow-inner shadow-stone-200/30 outline-none transition-all duration-300 placeholder:text-stone-400 hover:border-amber-200/80 focus:border-amber-400 focus:shadow-lg focus:shadow-amber-200/20 focus:ring-2 focus:ring-amber-300/50`}
                   placeholder="Short sentence for users"
                 />
               </div>
@@ -235,7 +236,7 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
                 </div>
               </div>
 
-              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-stone-200/80 bg-white/80 px-4 py-3 ring-1 ring-stone-100">
+              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-stone-200/80 bg-gradient-to-r from-white/90 to-amber-50/20 px-4 py-3 shadow-sm ring-1 ring-stone-100 transition-all duration-300 hover:border-amber-200/60 hover:shadow-md">
                 <input
                   type="checkbox"
                   checked={form.isActive}
@@ -251,14 +252,14 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-2xl border border-stone-200 bg-white px-5 py-3 text-sm font-semibold text-stone-700 shadow-sm transition hover:bg-stone-50"
+                  className="rounded-2xl border border-stone-200 bg-gradient-to-b from-white to-stone-50/50 px-5 py-3 text-sm font-semibold text-stone-700 shadow-md shadow-stone-300/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-stone-50 hover:shadow-lg active:scale-[0.98]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-2xl bg-gradient-to-r from-amber-600 to-amber-800 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-amber-900/20 transition hover:from-amber-700 hover:to-amber-900 disabled:opacity-60"
+                  className="rounded-2xl bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/30 transition-all duration-300 hover:from-amber-700 hover:via-amber-800 hover:to-amber-900 hover:shadow-xl disabled:pointer-events-none disabled:opacity-60"
                 >
                   {saving ? "Saving…" : isEdit ? "Save changes" : "Create reward"}
                 </button>
