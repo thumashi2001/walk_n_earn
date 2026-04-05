@@ -6,6 +6,7 @@ const navItems = [
   { to: "/about", label: "About" },
   { to: "/rewards", label: "Rewards" },
   { to: "/leaderboard", label: "Leaderboard" },
+  { to: "/weather-updates", label: "Weather" },
 ];
 
 function linkClassName({ isActive }) {

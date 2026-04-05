@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Admin from "./pages/Admin";
 import WeatherAdmin from "./pages/weather_admin/WeatherAdmin";
+import WeatherUpdates from "./pages/weather_user/WeatherUpdates";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/weather-updates" element={<WeatherUpdates />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/admin" element={<Admin />} />
