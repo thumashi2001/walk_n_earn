@@ -6,10 +6,17 @@ export const AUTH_ROLE_KEY = "role";
 
 /**
  * @param {{ email: string; password: string }} credentials
- * @returns {Promise<{ token: string; role: string; message?: string }>}
  */
 export async function login(credentials) {
   const { data } = await API.post("/login", credentials);
+  return data;
+}
+
+/**
+ * @param {{ fullName: string; email: string; password: string }} payload
+ */
+export async function register(payload) {
+  const { data } = await API.post("/login/register", payload);
   return data;
 }
 
@@ -25,9 +32,12 @@ export function clearSession() {
 
 /**
  * @param {unknown} err
- * @returns {string}
+ * @param {{ actionFallback?: string }} [options]
  */
-export function getLoginErrorMessage(err) {
+export function getAuthErrorMessage(
+  err,
+  { actionFallback = "Something went wrong. Please try again." } = {}
+) {
   if (axios.isAxiosError(err)) {
     const data = err.response?.data;
     const msg = data?.message;
@@ -36,7 +46,7 @@ export function getLoginErrorMessage(err) {
     if (!err.response) {
       return "Unable to reach the server. Check that the backend is running and try again.";
     }
-    return "Sign-in failed. Please try again.";
+    return actionFallback;
   }
-  return "Something went wrong. Please try again.";
+  return actionFallback;
 }
