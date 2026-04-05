@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import LocalWeatherCard from "../../components/weather/LocalWeatherCard";
+import HealthAdviceCard from "../../components/weather/HealthAdviceCard";
 
 export default function WeatherUpdates() {
   return (
@@ -18,19 +19,10 @@ export default function WeatherUpdates() {
         </div>
       </header>
 
-      {/* Main Content Grid */}
+      {/* Main Content Grid - Calling sections separately */}
       <div className="grid gap-6 md:grid-cols-2">
-        <section className="rounded-3xl border border-stone-200/40 bg-white p-8 shadow-lg shadow-stone-200/50">
-          <h2 className="text-lg font-bold text-stone-800">Local Conditions</h2>
-          <p className="mt-4 text-sm text-stone-500">Loading live weather data...</p>
-        </section>
-
-        <section className="rounded-3xl border border-amber-100/50 bg-gradient-to-br from-amber-50/50 to-white p-8 shadow-lg shadow-amber-900/5">
-          <h2 className="text-lg font-bold text-amber-900">Health Advice</h2>
-          <p className="mt-4 text-sm text-stone-600 italic">
-            "Check back here for tips from our experts based on today's weather."
-          </p>
-        </section>
+        <LocalWeatherCard />
+        <HealthAdviceCard />
       </div>
     </div>
   );
