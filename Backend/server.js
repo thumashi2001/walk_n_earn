@@ -8,6 +8,13 @@ const loginRoutes = require("./Components/Login/loginRoutes");
 const userRoutes = require("./Components/User/routes/userRoutes");
 const rewardRoutes = require("./Components/RewardAndPoints/routes/rewardRoutes");
 
+// Import weather/health Advice component
+const healthAdviceRoutes = require("./Components/Weather/admin/routes/healthAdviceRoutes");
+
+// User side weather route component
+const weatherUserRoutes = require("./Components/Weather/user/routes/weatherRoutes");
+const userHealthAdviceRoutes = require("./Components/Weather/user/routes/userHealthAdviceRoutes");
+
 const app = express();
 
 app.get("/api/health", (req, res) => {
@@ -33,6 +40,13 @@ app.use("/api/walking", walkingTripRoutes);
 app.use("/api/walking", walkingPointsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/rewards", rewardRoutes);
+
+// weather/health route
+app.use("/api/admin/health-advice", healthAdviceRoutes);
+
+// User weather routes
+app.use("/api/weather", weatherUserRoutes);
+app.use("/api/user/health-advice", userHealthAdviceRoutes);
 
 // Connect MongoDB
 mongoose
