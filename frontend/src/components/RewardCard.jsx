@@ -1,7 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import API from "../services/api";
+import FormAlert from "./auth/FormAlert";
+import { redeemReward, getRedeemErrorMessage } from "../services/rewards";
 import { getRewardImageUrl } from "../utils/rewardImages";
+
+const SUCCESS_COPY =
+  "Reward redeemed successfully 🎉 Check your email for the voucher";
 
 function RewardImage({ src, title }) {
   const [failed, setFailed] = useState(false);
@@ -43,6 +47,8 @@ function RewardImage({ src, title }) {
 export default function RewardCard({ reward, onRedeemed }) {
   const [redeeming, setRedeeming] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const submitLock = useRef(false);
 
   const imageUrl = useMemo(() => getRewardImageUrl(reward), [reward]);
 
@@ -50,19 +56,28 @@ export default function RewardCard({ reward, onRedeemed }) {
     typeof reward.quantity === "number" ? reward.quantity : null;
   const inStock = quantity === null || quantity > 0;
 
+  useEffect(() => {
+    if (!success) return;
+    const t = window.setTimeout(() => setSuccess(false), 6000);
+    return () => window.clearTimeout(t);
+  }, [success]);
+
   async function handleRedeem() {
+    if (submitLock.current || redeeming || !inStock) return;
+    submitLock.current = true;
     setError("");
+    setSuccess(false);
     setRedeeming(true);
     try {
-      await API.post("/rewards/redeem", { rewardId: reward._id });
+      await redeemReward(reward._id);
+      setSuccess(true);
       onRedeemed?.();
     } catch (err) {
-      const msg =
-        err.response?.data?.message ||
-        "Could not redeem this reward. Try again.";
-      setError(typeof msg === "string" ? msg : "Redeem failed.");
+      const message = getRedeemErrorMessage(err);
+      if (message) setError(message);
     } finally {
       setRedeeming(false);
+      submitLock.current = false;
     }
   }
 
@@ -122,25 +137,49 @@ export default function RewardCard({ reward, onRedeemed }) {
           </div>
         </dl>
 
+        {success && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="mt-3"
+          >
+            <FormAlert variant="success" role="status">
+              {SUCCESS_COPY}
+            </FormAlert>
+          </motion.div>
+        )}
+
         {error && (
-          <p className="mt-3 text-xs font-medium text-red-700" role="alert">
-            {error}
-          </p>
+          <div className="mt-3">
+            <FormAlert variant="error">{error}</FormAlert>
+          </div>
         )}
 
         <div className="mt-auto pt-5">
           <motion.button
             type="button"
-            whileHover={{ scale: inStock ? 1.02 : 1 }}
-            whileTap={{ scale: inStock ? 0.98 : 1 }}
-            disabled={redeeming || !inStock}
+            layout
+            whileHover={{
+              scale: inStock && !redeeming ? 1.02 : 1,
+              transition: { duration: 0.2 },
+            }}
+            whileTap={{
+              scale: inStock && !redeeming ? 0.98 : 1,
+              transition: { duration: 0.15 },
+            }}
+            disabled={!inStock || redeeming}
             onClick={handleRedeem}
+            aria-busy={redeeming}
             className="w-full rounded-2xl bg-gradient-to-r from-amber-600 to-amber-800 py-3 text-sm font-semibold text-white shadow-md shadow-amber-900/20 transition hover:from-amber-700 hover:to-amber-900 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
           >
             {redeeming ? (
               <span className="inline-flex items-center justify-center gap-2">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Redeeming…
+                <span
+                  className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+                  aria-hidden
+                />
+                Redeeming...
               </span>
             ) : (
               "Redeem"
