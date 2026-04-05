@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
 import RewardCard from "../components/RewardCard";
 import API from "../services/api";
 
@@ -21,24 +20,16 @@ export default function Rewards() {
     };
     
 
-   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#e6a65c] to-[#bfb8ae] p-6">
-
-
-      {/* Title */}
-      <h1 className="text-center text-3xl font-bold mt-8 mb-10">
+  return (
+    <div className="mx-auto max-w-5xl rounded-2xl bg-white/90 p-6 shadow-lg shadow-stone-200/80 ring-1 ring-stone-100 sm:p-8">
+      <h1 className="mb-8 text-center text-3xl font-bold text-stone-800">
         Collect Your Rewards!!
       </h1>
-
-      {/* Grid */}
       <div className="flex flex-wrap justify-center gap-8">
-
         {rewards.map((reward) => (
           <RewardCard key={reward._id} reward={reward} />
         ))}
-
       </div>
-
     </div>
   );
 }
