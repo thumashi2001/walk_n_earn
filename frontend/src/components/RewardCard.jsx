@@ -1,57 +1,153 @@
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import API from "../services/api";
+import { getRewardImageUrl } from "../utils/rewardImages";
 
-const handleRedeem = async () => {
-    try {
-        const res = await API.post("/rewards/redeem", {
-            rewardId: reward._id,
-        });
+function RewardImage({ src, title }) {
+  const [failed, setFailed] = useState(false);
+  const showImg = src && !failed;
 
-        alert("Redeemed Successfully!!");
-    } catch (error) {
-        alert(error.response?.data?.message || "Error redeeming");
-    }
-};
-
-
-
-export default function RewardCard({ reward }) {
   return (
-    <motion.div
-      whileHover={{ scale: 1.07 }}
-      transition={{ type: "spring", stiffness: 200 }}
-      className="bg-[#f3e4d3] rounded-2xl shadow-md overflow-hidden w-64 cursor-pointer hover:shadow-2xl"
-    >
-      {/* Image */}
-      <div className="bg-white flex justify-center items-center h-40 rounded-t-2xl">
+    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#fffefb] via-amber-50/80 to-stone-100/90">
+      {showImg ? (
         <img
-          src={reward.image}
-          alt={reward.title}
-          className="h-28 object-contain transition-transform duration-300 hover:scale-110"
+          src={src}
+          alt={title}
+          className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          onError={() => setFailed(true)}
         />
+      ) : (
+        <div
+          className="flex h-full w-full flex-col items-center justify-center gap-2 text-amber-900/25"
+          aria-hidden
+        >
+          <svg
+            className="h-14 w-14"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3A1.5 1.5 0 001.5 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008H12V8.25z"
+            />
+          </svg>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function RewardCard({ reward, onRedeemed }) {
+  const [redeeming, setRedeeming] = useState(false);
+  const [error, setError] = useState("");
+
+  const imageUrl = useMemo(() => getRewardImageUrl(reward), [reward]);
+
+  const quantity =
+    typeof reward.quantity === "number" ? reward.quantity : null;
+  const inStock = quantity === null || quantity > 0;
+
+  async function handleRedeem() {
+    setError("");
+    setRedeeming(true);
+    try {
+      await API.post("/rewards/redeem", { rewardId: reward._id });
+      onRedeemed?.();
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        "Could not redeem this reward. Try again.";
+      setError(typeof msg === "string" ? msg : "Redeem failed.");
+    } finally {
+      setRedeeming(false);
+    }
+  }
+
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{
+        y: -6,
+        transition: { duration: 0.22, ease: "easeOut" },
+      }}
+      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-3xl bg-white/95 shadow-md shadow-stone-200/60 ring-1 ring-stone-200/70 backdrop-blur-sm"
+    >
+      <div className="relative">
+        <RewardImage src={imageUrl} title={reward.title} />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/15 via-transparent to-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
 
-      {/* Content */}
-      <div className="p-4 text-left">
-        <h2 className="font-semibold text-sm text-black">
+      <div className="flex flex-1 flex-col bg-gradient-to-b from-white to-amber-50/40 px-5 pb-5 pt-4">
+        <h2 className="text-xl font-semibold leading-snug tracking-tight text-stone-900">
           {reward.title}
         </h2>
 
-        <p className="text-xs text-gray-600">
-          Coffee store
-        </p>
+        {reward.description?.trim() ? (
+          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-stone-600">
+            {reward.description.trim()}
+          </p>
+        ) : (
+          <p className="mt-2 text-sm italic leading-relaxed text-stone-400">
+            Redeem this reward with your walking points.
+          </p>
+        )}
 
-        <p className="text-xs text-black mt-1">
-          {reward.pointsRequired} points
-        </p>
+        <dl className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl bg-amber-50/95 px-3 py-3 ring-1 ring-amber-200/50">
+            <dt className="text-xs font-medium uppercase tracking-wide text-amber-900/60">
+              Points
+            </dt>
+            <dd className="mt-0.5 text-2xl font-bold tabular-nums text-amber-950">
+              {reward.pointsRequired}
+            </dd>
+          </div>
+          <div className="rounded-2xl bg-white/95 px-3 py-3 ring-1 ring-stone-200/80">
+            <dt className="text-xs font-medium uppercase tracking-wide text-stone-500">
+              Available
+            </dt>
+            <dd className="mt-0.5 text-2xl font-bold tabular-nums text-stone-900">
+              {quantity === null ? "—" : quantity}
+            </dd>
+            {quantity !== null && quantity === 0 && (
+              <p className="mt-1 text-[11px] font-medium text-red-700">
+                Out of stock
+              </p>
+            )}
+          </div>
+        </dl>
 
-        <button
-           onClick={handleRedeem}
-           className="mt-4 bg-[#e2a45c] hover:bg-[#d4934b] text-black text-sm px-6 py-2 rounded-full"
-        >
-           Redeem
-        </button>
+        {error && (
+          <p className="mt-3 text-xs font-medium text-red-700" role="alert">
+            {error}
+          </p>
+        )}
+
+        <div className="mt-auto pt-5">
+          <motion.button
+            type="button"
+            whileHover={{ scale: inStock ? 1.02 : 1 }}
+            whileTap={{ scale: inStock ? 0.98 : 1 }}
+            disabled={redeeming || !inStock}
+            onClick={handleRedeem}
+            className="w-full rounded-2xl bg-gradient-to-r from-amber-600 to-amber-800 py-3 text-sm font-semibold text-white shadow-md shadow-amber-900/20 transition hover:from-amber-700 hover:to-amber-900 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {redeeming ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                Redeeming…
+              </span>
+            ) : (
+              "Redeem"
+            )}
+          </motion.button>
+        </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 }
