@@ -16,17 +16,17 @@ exports.loginUser = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: "Invalid Password" });
 
-    //Generate JWT token
+    //Generate JWT token (include role for downstream checks)
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    //Send response with token
     res.json({
       message: "User logged in successfully",
       token,
+      role: user.role,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error});
