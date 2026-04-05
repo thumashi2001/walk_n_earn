@@ -3,8 +3,8 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:5050/api/weather";
 
 /**
- * Logic to get browser coordinates and fetch weather from the backend.
- * Encapsulates the external Geolocation API and Axios calls.
+ * Logic to get browser coordinates, fetch weather from the backend,
+ * and perform reverse geocoding to get the location name.
  */
 export const getLiveWeatherDetails = async () => {
   return new Promise((resolve, reject) => {
@@ -16,12 +16,34 @@ export const getLiveWeatherDetails = async () => {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          const response = await axios.get(`${API_BASE_URL}/current`, {
+
+          // 1. Fetch weather from your backend (existing functionality)
+          const weatherResponse = await axios.get(`${API_BASE_URL}/current`, {
             params: { lat: latitude, lon: longitude },
           });
 
-          // Extracting the nested object as per your backend controller
-          resolve(response.data.currentWeather);
+          // 2. Fetch location name via Reverse Geocoding (new functionality)
+          let locationName = "Unknown Location";
+          try {
+            const geoResponse = await axios.get(
+              `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+            );
+            // Extract the most relevant name (city, town, or village)
+            locationName = 
+              geoResponse.data.address.city || 
+              geoResponse.data.address.town || 
+              geoResponse.data.address.village || 
+              "Local Area";
+          } catch (geoErr) {
+            console.error("Geocoding failed, using default name.");
+          }
+
+          // 3. Merge and resolve
+          resolve({
+            ...weatherResponse.data.currentWeather,
+            locationName: locationName // Now available in your UI
+          });
+
         } catch (error) {
           const msg =
             error.response?.data?.message ||
@@ -35,7 +57,7 @@ export const getLiveWeatherDetails = async () => {
             ? "Location permission denied."
             : "Could not determine your location.";
         reject(new Error(msg));
-      },
+      }
     );
   });
 };
