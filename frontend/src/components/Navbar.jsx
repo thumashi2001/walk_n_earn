@@ -21,8 +21,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   useLocation();
   const isAdmin =
-    typeof window !== "undefined" &&
-    localStorage.getItem("role") === "admin";
+    typeof window !== "undefined" && localStorage.getItem("role") === "admin";
 
   return (
     <header className="sticky top-0 z-40 mb-6">
@@ -44,9 +43,14 @@ export default function Navbar() {
               </NavLink>
             ))}
             {isAdmin && (
-              <NavLink to="/admin" className={linkClassName}>
-                Admin
-              </NavLink>
+              <>
+                <NavLink to="/admin" className={linkClassName}>
+                  Admin
+                </NavLink>
+                <NavLink to="/weather-admin" className={linkClassName}>
+                  Weather Admin
+                </NavLink>
+              </>
             )}
           </div>
 
