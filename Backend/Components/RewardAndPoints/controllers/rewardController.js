@@ -113,3 +113,47 @@ exports.redeemReward = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get only active rewards (user-facing store view)
+exports.getActiveRewards = async (req, res) => {
+  try {
+    const rewards = await Reward.find({ isActive: true });
+    res.json(rewards);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get current user's redemption history
+exports.getUserRedemptions = async (req, res) => {
+  try {
+    const redemptions = await Redemption.find({ userId: req.user._id })
+      .populate("rewardId", "title description pointsRequired")
+      .sort({ createdAt: -1 });
+    res.json(redemptions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get only active rewards (user-facing store view)
+exports.getActiveRewards = async (req, res) => {
+  try {
+    const rewards = await Reward.find({ isActive: true });
+    res.json(rewards);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get current user's redemption history
+exports.getUserRedemptions = async (req, res) => {
+  try {
+    const redemptions = await Redemption.find({ userId: req.user._id })
+      .populate("rewardId", "title description pointsRequired")
+      .sort({ createdAt: -1 });
+    res.json(redemptions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

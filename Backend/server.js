@@ -7,6 +7,7 @@ const walkingPointsRoutes = require("./Components/WalkingManagement/routes/point
 const loginRoutes = require("./Components/Login/loginRoutes");
 const userRoutes = require("./Components/User/routes/userRoutes");
 const rewardRoutes = require("./Components/RewardAndPoints/routes/rewardRoutes");
+const leaderboardRoutes = require("./Components/Leaderboard/routes/leaderboardRoutes");
 
 const path = require("path");
 // Import weather/health Advice component
@@ -41,6 +42,7 @@ app.use("/api/walking", walkingTripRoutes);
 app.use("/api/walking", walkingPointsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/rewards", rewardRoutes);
+app.use("/api/leaderboard", leaderboardRoutes);
 
 // weather/health route
 app.use("/api/admin/health-advice", healthAdviceRoutes);

@@ -86,4 +86,16 @@ const getUserById = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserById };
+// Get all users (admin only, excludes passwordHash)
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({ role: "user" })
+      .select("_id fullName email totalPoints")
+      .sort({ fullName: 1 });
+    return res.status(200).json(users);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch users", error: err.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserById, getAllUsers };

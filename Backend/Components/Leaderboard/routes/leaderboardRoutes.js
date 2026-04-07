@@ -3,134 +3,123 @@ const router = express.Router();
 const { body, param, validationResult } = require("express-validator");
 
 const {
-  updateWeeklyLeaderboard,
+  createLeaderboardEntry,
+  getAllRecords,
   getTop10,
   getUserRank,
   adminUpdateWeeklyPoints,
   deleteWeeklyRecord,
+  notifyTop5,
 } = require("../controllers/leaderboardController");
 
+const authMiddleware  = require("../../../middleware/authMiddleware");
+const adminMiddleware = require("../../../middleware/adminMiddleware");
+
 /* -------------------------------------------------------
-   🔎 Validation Error Handler Middleware
+   Validation error handler
 ------------------------------------------------------- */
 const validate = (req, res, next) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      errors: errors.array(),
-    });
-  }
+  if (!errors.isEmpty())
+    return res.status(400).json({ success: false, errors: errors.array() });
   next();
 };
 
-/* -------------------------------------------------------
-   CREATE or UPDATE (User activity)
-------------------------------------------------------- */
+/* ═══════════════════════════════════════════════════════
+   CREATE — Admin creates a weekly leaderboard entry
+   POST /api/leaderboard
+═══════════════════════════════════════════════════════ */
 router.post(
   "/",
+  authMiddleware,
+  adminMiddleware,
   [
     body("userId")
-      .notEmpty()
-      .withMessage("User ID is required")
-      .isMongoId()
-      .withMessage("Invalid User ID"),
-
+      .notEmpty().withMessage("userId is required")
+      .isMongoId().withMessage("userId must be a valid Mongo ID"),
     body("points")
-      .notEmpty()
-      .withMessage("Points are required")
-      .isNumeric()
-      .withMessage("Points must be a number"),
-
+      .optional()
+      .isNumeric().withMessage("points must be a number"),
     body("distance")
-      .notEmpty()
-      .withMessage("Distance is required")
-      .isNumeric()
-      .withMessage("Distance must be a number"),
-
+      .optional()
+      .isNumeric().withMessage("distance must be a number"),
     body("emission")
-      .notEmpty()
-      .withMessage("Emission is required")
-      .isNumeric()
-      .withMessage("Emission must be a number"),
+      .optional()
+      .isNumeric().withMessage("emission must be a number"),
   ],
   validate,
-  async (req, res) => {
-    try {
-      const { userId, points, distance, emission } = req.body;
-
-      const result = await updateWeeklyLeaderboard(
-        userId,
-        points,
-        distance,
-        emission
-      );
-
-      res.status(201).json({
-        success: true,
-        message: "Leaderboard updated successfully",
-        data: result,
-      });
-    } catch (err) {
-      res.status(500).json({
-        success: false,
-        message: err.message,
-      });
-    }
-  }
+  createLeaderboardEntry
 );
 
-/* -------------------------------------------------------
-   READ - Top 10
-------------------------------------------------------- */
+/* ═══════════════════════════════════════════════════════
+   READ — Admin gets ALL records for the current week
+   GET /api/leaderboard
+═══════════════════════════════════════════════════════ */
+router.get("/", authMiddleware, adminMiddleware, getAllRecords);
+
+/* ═══════════════════════════════════════════════════════
+   READ — Public top 10 for the current week
+   GET /api/leaderboard/top
+═══════════════════════════════════════════════════════ */
 router.get("/top", getTop10);
 
-/* -------------------------------------------------------
-   READ - Specific User Rank
-------------------------------------------------------- */
+/* ═══════════════════════════════════════════════════════
+   READ — Specific user's rank
+   GET /api/leaderboard/rank/:userId
+═══════════════════════════════════════════════════════ */
 router.get(
   "/rank/:userId",
   [
-    param("userId")
-      .isMongoId()
-      .withMessage("Invalid User ID"),
+    param("userId").isMongoId().withMessage("Invalid User ID"),
   ],
   validate,
   getUserRank
 );
 
-/* -------------------------------------------------------
-   UPDATE (Admin Manual Update)
-------------------------------------------------------- */
+/* ═══════════════════════════════════════════════════════
+   UPDATE — Admin corrects a record by its _id
+   PUT /api/leaderboard/:id
+   Body: { newPoints?, newDistance?, newEmission? }
+═══════════════════════════════════════════════════════ */
 router.put(
   "/:id",
+  authMiddleware,
+  adminMiddleware,
   [
-    param("id")
-      .isMongoId()
-      .withMessage("Invalid Leaderboard Record ID"),
-
+    param("id").isMongoId().withMessage("Invalid record ID"),
     body("newPoints")
-      .notEmpty()
-      .withMessage("New points value is required")
-      .isNumeric()
-      .withMessage("New points must be a number"),
+      .optional()
+      .isNumeric().withMessage("newPoints must be a number"),
+    body("newDistance")
+      .optional()
+      .isNumeric().withMessage("newDistance must be a number"),
+    body("newEmission")
+      .optional()
+      .isNumeric().withMessage("newEmission must be a number"),
   ],
   validate,
   adminUpdateWeeklyPoints
 );
 
-/* -------------------------------------------------------
-   DELETE Leaderboard Record
-------------------------------------------------------- */
+/* ═══════════════════════════════════════════════════════
+   DELETE — Admin removes a record by its _id
+   DELETE /api/leaderboard/:id
+═══════════════════════════════════════════════════════ */
 router.delete(
   "/:id",
+  authMiddleware,
+  adminMiddleware,
   [
-    param("id")
-      .isMongoId()
-      .withMessage("Invalid Leaderboard Record ID"),
+    param("id").isMongoId().withMessage("Invalid record ID"),
   ],
   validate,
   deleteWeeklyRecord
 );
+
+/* ═══════════════════════════════════════════════════════
+   NOTIFY — Admin sends Top-5 congratulatory emails
+   POST /api/leaderboard/notify-top5
+═══════════════════════════════════════════════════════ */
+router.post("/notify-top5", authMiddleware, adminMiddleware, notifyTop5);
 
 module.exports = router;

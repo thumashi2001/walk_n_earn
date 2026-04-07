@@ -1,64 +1,41 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Home from "./pages/Home";
-import ProtectedRoute from "./components/ProtectedRoute";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
-import About from "./pages/About";
+import Navbar from "./components/Layout/Navbar";
+import LoginPage from "./components/Auth/LoginPage";
+import LeaderboardPage from "./components/Leaderboard/LeaderboardPage";
+import AdminLeaderboardPage from "./components/Leaderboard/AdminLeaderboardPage";
+import RewardsPage from "./components/Rewards/RewardsPage";
 
-function App() {
-  const { user } = useAuth();
-
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#edaf5e",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "420px",
-          minHeight: "100vh",
-          backgroundColor: "#ffffff",
-          padding: "20px",
-          boxSizing: "border-box",
-        }}
-      >
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={user ? <Navigate to="/home" replace /> : <Landing />}
-            />
-            <Route
-              path="/login"
-              element={user ? <Navigate to="/home" replace /> : <Login />}
-            />
-            <Route
-              path="/signup"
-              element={user ? <Navigate to="/home" replace /> : <Signup />}
-            />
-            <Route
-              path="/home"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
-    </div>
-  );
+function ProtectedRoute({ children }) {
+  const { token } = useAuth();
+  return token ? children : <Navigate to="/login" replace />;
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* All authenticated pages share the Navbar layout */}
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <div className="min-h-screen bg-gray-50">
+              <Navbar />
+              <main className="container mx-auto px-4 py-8">
+                <Routes>
+                  <Route path="/leaderboard" element={<LeaderboardPage />} />
+                  <Route path="/admin/leaderboard" element={<AdminLeaderboardPage />} />
+                  <Route path="/rewards" element={<RewardsPage />} />
+                  {/* Default redirect */}
+                  <Route path="*" element={<Navigate to="/leaderboard" replace />} />
+                </Routes>
+              </main>
+            </div>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+}
