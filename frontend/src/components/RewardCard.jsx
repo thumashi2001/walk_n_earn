@@ -12,7 +12,7 @@ function RewardImage({ src, title }) {
   const showImg = src && !failed;
 
   return (
-    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#fffefb] via-amber-50/80 to-stone-100/90">
+    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#fffefb] via-[#FFA500]/14 to-[#FF7518]/12">
       {showImg ? (
         <img
           src={src}
@@ -22,7 +22,7 @@ function RewardImage({ src, title }) {
         />
       ) : (
         <div
-          className="flex h-full w-full flex-col items-center justify-center gap-2 text-amber-900/25"
+          className="flex h-full w-full flex-col items-center justify-center gap-2 text-[#FF5F1F]/30"
           aria-hidden
         >
           <svg
@@ -91,14 +91,14 @@ export default function RewardCard({ reward, onRedeemed }) {
         y: -8,
         transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
       }}
-      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-white/50 bg-gradient-to-b from-white/98 to-amber-50/30 shadow-lg shadow-stone-300/25 ring-1 ring-stone-200/50 backdrop-blur-sm transition-shadow duration-500 ease-out hover:shadow-2xl hover:shadow-amber-900/12"
+      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-white/50 bg-gradient-to-b from-white/98 to-[#FFA500]/10 shadow-lg shadow-[#FF7518]/15 ring-1 ring-[#FFA500]/20 backdrop-blur-sm transition-shadow duration-500 ease-out hover:shadow-2xl hover:shadow-[#FF5F1F]/20"
     >
       <div className="relative">
         <RewardImage src={imageUrl} title={reward.title} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/20 via-stone-900/5 to-transparent opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100" />
       </div>
 
-      <div className="flex flex-1 flex-col bg-gradient-to-b from-white/95 via-white to-amber-50/50 px-5 pb-5 pt-4">
+      <div className="flex flex-1 flex-col bg-gradient-to-b from-white/95 via-white to-[#FFA500]/8 px-5 pb-5 pt-4">
         <h2 className="text-xl font-semibold leading-snug tracking-tight text-stone-900">
           {reward.title}
         </h2>
@@ -114,11 +114,11 @@ export default function RewardCard({ reward, onRedeemed }) {
         )}
 
         <dl className="mt-5 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-gradient-to-br from-amber-50/98 to-amber-100/40 px-3 py-3 shadow-sm shadow-amber-900/5 ring-1 ring-amber-200/55 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md">
-            <dt className="text-xs font-medium uppercase tracking-wide text-amber-900/60">
+          <div className="rounded-2xl bg-gradient-to-br from-[#FFA500]/18 to-[#FF7518]/12 px-3 py-3 shadow-sm shadow-[#FF7518]/10 ring-1 ring-[#FFA500]/30 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:shadow-md">
+            <dt className="text-xs font-medium uppercase tracking-wide text-[#a33a00]/75">
               Points
             </dt>
-            <dd className="mt-0.5 text-2xl font-bold tabular-nums text-amber-950">
+            <dd className="mt-0.5 text-2xl font-bold tabular-nums text-[#7a2b00]">
               {reward.pointsRequired}
             </dd>
           </div>
@@ -171,7 +171,7 @@ export default function RewardCard({ reward, onRedeemed }) {
             disabled={!inStock || redeeming}
             onClick={handleRedeem}
             aria-busy={redeeming}
-            className="w-full rounded-2xl bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/30 transition-all duration-300 ease-out hover:from-amber-700 hover:via-amber-800 hover:to-amber-900 hover:shadow-xl hover:shadow-amber-950/25 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+            className="w-full rounded-2xl bg-gradient-to-r from-[#FFA500] via-[#FF7518] to-[#FF5F1F] py-3 text-sm font-semibold text-white shadow-lg shadow-[#FF7518]/30 transition-all duration-300 ease-out hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-xl hover:shadow-[#FF5F1F]/25 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           >
             {redeeming ? (
               <span className="inline-flex items-center justify-center gap-2">

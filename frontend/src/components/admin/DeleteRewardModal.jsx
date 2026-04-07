@@ -57,7 +57,7 @@ export default function DeleteRewardModal({ open, reward, onClose, onDeleted }) 
             role="alertdialog"
             aria-modal="true"
             aria-labelledby="delete-reward-title"
-            className="relative w-full max-w-md rounded-3xl border border-white/80 bg-gradient-to-b from-[#fffefb] to-amber-50/20 p-6 shadow-[0_25px_60px_-15px_rgba(28,25,23,0.25)] ring-1 ring-stone-200/70"
+            className="relative w-full max-w-md rounded-3xl border border-white/80 bg-gradient-to-b from-[#fffefb] to-[#FFA500]/10 p-6 shadow-[0_25px_60px_-15px_rgba(28,25,23,0.25)] ring-1 ring-stone-200/70"
             initial={{ opacity: 0, scale: 0.96, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 16 }}

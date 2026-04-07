@@ -12,7 +12,7 @@ function linkClassName({ isActive }) {
   const base =
     "rounded-full px-3 py-2 text-sm font-medium transition-all duration-300 ease-out";
   if (isActive) {
-    return `${base} bg-gradient-to-b from-amber-100/95 to-amber-50/90 text-amber-950 shadow-md shadow-amber-900/10 ring-1 ring-amber-200/70`;
+    return `${base} bg-gradient-to-b from-[#FFA500]/20 to-[#FF7518]/10 text-[#7a2b00] shadow-md shadow-[#FF7518]/20 ring-1 ring-[#FFA500]/35`;
   }
   return `${base} text-stone-600 hover:bg-white/90 hover:text-stone-900 hover:shadow-sm hover:shadow-stone-200/50`;
 }
@@ -31,7 +31,7 @@ export default function Navbar() {
           <NavLink
             to="/"
             end
-            className="shrink-0 text-lg font-semibold tracking-tight text-amber-900 transition-all duration-300 hover:text-amber-950 hover:drop-shadow-sm active:scale-[0.98]"
+            className="shrink-0 text-lg font-semibold tracking-tight text-[#7a2b00] transition-all duration-300 hover:text-[#5f2100] hover:drop-shadow-sm active:scale-[0.98]"
             onClick={() => setMenuOpen(false)}
           >
             Walk n Earn
@@ -59,8 +59,8 @@ export default function Navbar() {
               className={({ isActive }) =>
                 `rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out active:scale-[0.97] ${
                   isActive
-                    ? "bg-gradient-to-b from-amber-800 to-amber-900 text-white shadow-lg shadow-amber-900/35 ring-2 ring-amber-700/40"
-                    : "bg-gradient-to-b from-amber-600 to-amber-800 text-white shadow-md shadow-amber-900/25 hover:from-amber-700 hover:to-amber-900 hover:shadow-lg"
+                    ? "bg-gradient-to-b from-[#FF7518] to-[#FF5F1F] text-white shadow-lg shadow-[#FF5F1F]/35 ring-2 ring-[#FF7518]/45"
+                    : "bg-gradient-to-b from-[#FFA500] via-[#FF7518] to-[#FF5F1F] text-white shadow-md shadow-[#FF7518]/30 hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-lg"
                 }`
               }
             >
@@ -79,9 +79,9 @@ export default function Navbar() {
               <span className="text-xl leading-none">×</span>
             ) : (
               <span className="flex flex-col gap-1.5" aria-hidden>
-                <span className="block h-0.5 w-5 rounded-full bg-stone-600" />
-                <span className="block h-0.5 w-5 rounded-full bg-stone-600" />
-                <span className="block h-0.5 w-5 rounded-full bg-stone-600" />
+                    <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00]" />
+                <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00]" />
+                <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00]" />
               </span>
             )}
           </button>
@@ -122,8 +122,8 @@ export default function Navbar() {
                 className={({ isActive }) =>
                   `rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition-all duration-300 active:scale-[0.98] ${
                     isActive
-                      ? "bg-gradient-to-b from-amber-800 to-amber-900 text-white shadow-lg shadow-amber-900/30"
-                      : "bg-gradient-to-b from-amber-600 to-amber-800 text-white shadow-md hover:from-amber-700 hover:to-amber-900 hover:shadow-lg"
+                      ? "bg-gradient-to-b from-[#FF7518] to-[#FF5F1F] text-white shadow-lg shadow-[#FF5F1F]/30"
+                      : "bg-gradient-to-b from-[#FFA500] via-[#FF7518] to-[#FF5F1F] text-white shadow-md hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-lg"
                   }`
                 }
                 onClick={() => setMenuOpen(false)}

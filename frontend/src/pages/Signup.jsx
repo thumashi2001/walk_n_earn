@@ -42,12 +42,22 @@ export default function Signup() {
     <AuthPageShell
       title="Create your account"
       description="Join Walk n Earn and start turning steps into rewards."
+      sideTitle="Welcome Back!"
+      sideDescription="To keep connected with us please login with your personal info"
+      sideAction={
+        <Link
+          to="/login"
+          className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/10 px-10 py-3 text-sm font-semibold text-white shadow-sm backdrop-blur transition-all duration-200 hover:bg-white/15 hover:shadow-md active:scale-[0.98]"
+        >
+          SIGN IN
+        </Link>
+      }
       footer={
         <p className="mt-8 text-center text-sm text-stone-600">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="font-semibold text-amber-900 underline-offset-4 transition-all duration-300 hover:text-amber-950 hover:underline hover:decoration-amber-600/60"
+            className="font-semibold text-[#FF5F1F] underline-offset-4 transition-all duration-300 hover:text-[#d64b12] hover:underline hover:decoration-[#FF7518]/60"
           >
             Sign in
           </Link>
@@ -97,7 +107,7 @@ export default function Signup() {
           labelRight={
             <button
               type="button"
-              className="rounded-lg px-1.5 py-0.5 text-xs font-medium text-amber-800/90 transition-all duration-200 hover:bg-amber-100/60 hover:text-amber-950 active:scale-95"
+              className="rounded-lg px-1.5 py-0.5 text-xs font-medium text-[#FF5F1F] transition-all duration-200 hover:bg-[#FFA500]/15 hover:text-[#d64b12] active:scale-95"
               onClick={() => setShowPassword((v) => !v)}
             >
               {showPassword ? "Hide" : "Show"}

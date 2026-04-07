@@ -1,34 +1,62 @@
-export default function AuthPageShell({ title, description, children, footer }) {
+export default function AuthPageShell({
+  title,
+  description,
+  children,
+  footer,
+  sideTitle = "Welcome back!",
+  sideDescription = "Enter your personal details to use all of the features",
+  sideAction,
+}) {
   return (
-    <div className="relative mx-auto flex max-w-lg justify-center px-0 sm:px-4">
+    <div className="relative flex min-h-[calc(100vh-0px)] items-center justify-center bg-gradient-to-br from-[#FFA500] via-[#FF7518] to-[#FF5F1F] px-4 py-10 sm:px-6">
       <div
-        className="pointer-events-none absolute -left-24 top-0 h-64 w-64 rounded-full bg-amber-200/30 blur-3xl"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -right-16 bottom-0 h-48 w-48 rounded-full bg-stone-300/25 blur-3xl"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(closest-side_at_15%_20%,rgba(255,255,255,0.48),transparent_58%),radial-gradient(closest-side_at_80%_75%,rgba(255,255,255,0.35),transparent_58%)]"
         aria-hidden
       />
 
-      <div className="relative w-full overflow-hidden rounded-3xl border border-white/70 bg-gradient-to-b from-white/98 to-amber-50/15 shadow-2xl shadow-stone-400/25 ring-1 ring-stone-200/60 backdrop-blur-md transition-shadow duration-500 hover:shadow-[0_25px_50px_-12px_rgba(120,53,15,0.12)]">
-        <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-200 via-amber-400 to-amber-800/90" />
+      <div className="relative w-full max-w-5xl overflow-hidden rounded-[32px] bg-gradient-to-br from-white via-[#FFA500]/12 to-white shadow-[0_30px_80px_-35px_rgba(0,0,0,0.45)] ring-1 ring-white/40">
+        <div className="grid min-h-[560px] grid-cols-1 lg:grid-cols-2">
+          <section className="relative overflow-hidden bg-gradient-to-br from-[#FFA500] via-[#FF7518] to-[#FF5F1F] px-10 py-12 text-white lg:px-12 lg:py-14">
+            <div
+              className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#FFA500]/28 blur-3xl"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-[#FF5F1F]/20 blur-3xl"
+              aria-hidden
+            />
 
-        <div className="px-8 pb-10 pt-9 sm:px-10 sm:pb-12 sm:pt-10">
-          <div className="mb-8 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-800/80">
-              Walk n Earn
-            </p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-stone-900 sm:text-3xl">
-              {title}
-            </h1>
-            {description && (
-              <p className="mt-2 text-sm text-stone-600">{description}</p>
-            )}
-          </div>
+            <div className="relative flex h-full flex-col items-start justify-center">
+              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                {sideTitle}
+              </h2>
+              <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/90">
+                {sideDescription}
+              </p>
 
-          {children}
+              {sideAction ? (
+                <div className="mt-10">{sideAction}</div>
+              ) : null}
+            </div>
+          </section>
 
-          {footer}
+          <section className="px-8 pb-10 pt-10 sm:px-12 sm:pb-12 sm:pt-12">
+            <div className="mb-8 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+                Walk n Earn
+              </p>
+              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-stone-900 sm:text-3xl">
+                {title}
+              </h1>
+              {description ? (
+                <p className="mt-2 text-sm text-stone-600">{description}</p>
+              ) : null}
+            </div>
+
+            {children}
+
+            {footer}
+          </section>
         </div>
       </div>
     </div>

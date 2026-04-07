@@ -24,7 +24,7 @@ export default function LabeledIconInput({
         {labelRight}
       </div>
       <div className="relative">
-        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 transition-colors duration-300 group-focus-within/field:text-amber-600/80">
+        <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 transition-colors duration-300 group-focus-within/field:text-[#FF7518]">
           {icon}
         </span>
         <input

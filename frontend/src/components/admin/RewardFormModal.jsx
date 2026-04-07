@@ -123,13 +123,13 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="reward-form-title"
-            className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/80 bg-gradient-to-b from-[#fffefb] to-amber-50/25 shadow-[0_25px_60px_-15px_rgba(28,25,23,0.25)] ring-1 ring-stone-200/70"
+            className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-white/80 bg-gradient-to-b from-[#fffefb] to-[#FFA500]/10 shadow-[0_25px_60px_-15px_rgba(28,25,23,0.25)] ring-1 ring-stone-200/70"
             initial={{ opacity: 0, scale: 0.96, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 16 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone-100/80 bg-gradient-to-r from-amber-50/95 via-white/90 to-amber-50/30 px-6 py-4 shadow-sm shadow-stone-200/30 backdrop-blur-md">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-stone-100/80 bg-gradient-to-r from-[#FFA500]/14 via-white/90 to-[#FF7518]/10 px-6 py-4 shadow-sm shadow-stone-200/30 backdrop-blur-md">
               <h2
                 id="reward-form-title"
                 className="text-lg font-semibold text-stone-900"
@@ -175,7 +175,7 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
                   rows={3}
                   value={form.description}
                   onChange={(e) => update("description", e.target.value)}
-                  className={`mt-1.5 min-h-[88px] w-full resize-y rounded-2xl border border-stone-200/90 bg-[#fffefb] px-4 py-3 text-stone-900 shadow-inner shadow-stone-200/30 outline-none transition-all duration-300 placeholder:text-stone-400 hover:border-amber-200/80 focus:border-amber-400 focus:shadow-lg focus:shadow-amber-200/20 focus:ring-2 focus:ring-amber-300/50`}
+                  className={`mt-1.5 min-h-[88px] w-full resize-y rounded-2xl border border-stone-200/90 bg-[#fffefb] px-4 py-3 text-stone-900 shadow-inner shadow-stone-200/30 outline-none transition-all duration-300 placeholder:text-stone-400 hover:border-[#FFA500]/70 focus:border-[#FF7518] focus:shadow-lg focus:shadow-[#FFA500]/20 focus:ring-2 focus:ring-[#FF7518]/35`}
                   placeholder="Short sentence for users"
                 />
               </div>
@@ -236,12 +236,12 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
                 </div>
               </div>
 
-              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-stone-200/80 bg-gradient-to-r from-white/90 to-amber-50/20 px-4 py-3 shadow-sm ring-1 ring-stone-100 transition-all duration-300 hover:border-amber-200/60 hover:shadow-md">
+              <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-stone-200/80 bg-gradient-to-r from-white/90 to-[#FFA500]/10 px-4 py-3 shadow-sm ring-1 ring-stone-100 transition-all duration-300 hover:border-[#FFA500]/45 hover:shadow-md">
                 <input
                   type="checkbox"
                   checked={form.isActive}
                   onChange={(e) => update("isActive", e.target.checked)}
-                  className="h-4 w-4 rounded border-stone-300 text-amber-700 focus:ring-amber-500"
+                  className="h-4 w-4 rounded border-stone-300 text-[#FF5F1F] focus:ring-[#FF7518]"
                 />
                 <span className="text-sm font-medium text-stone-700">
                   Active (visible on public rewards page)
@@ -259,7 +259,7 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="rounded-2xl bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-900/30 transition-all duration-300 hover:from-amber-700 hover:via-amber-800 hover:to-amber-900 hover:shadow-xl disabled:pointer-events-none disabled:opacity-60"
+                  className="rounded-2xl bg-gradient-to-r from-[#FFA500] via-[#FF7518] to-[#FF5F1F] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#FF7518]/30 transition-all duration-300 hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-xl disabled:pointer-events-none disabled:opacity-60"
                 >
                   {saving ? "Saving…" : isEdit ? "Save changes" : "Create reward"}
                 </button>
