@@ -14,6 +14,8 @@ function RewardCard({ reward, onRedeem, redeemingId, alreadyRedeemed }) {
   const canAfford = (user?.totalPoints ?? 0) >= reward.pointsRequired;
   const shortfall = reward.pointsRequired - (user?.totalPoints ?? 0);
 
+  // hjjh
+  
   let buttonLabel = "Redeem Now";
   let buttonDisabled = false;
   let buttonClass =
