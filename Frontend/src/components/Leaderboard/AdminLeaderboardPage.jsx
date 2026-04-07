@@ -28,7 +28,7 @@ function Field({ label, type = "text", value, onChange, placeholder }) {
   );
 }
 
-/* ─── Create Modal ──────────────────────────────────── */
+/* ─── Create Modal.. ──────────────────────────────────── */
 function CreateModal({ onClose, onCreated }) {
   const [userId, setUserId]     = useState("");
   const [points, setPoints]     = useState("");
