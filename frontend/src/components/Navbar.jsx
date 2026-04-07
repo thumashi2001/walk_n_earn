@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { getCurrentUser } from "../services/api";
+import { AUTH_ROLE_KEY, AUTH_TOKEN_KEY } from "../services/auth";
 
 const navItems = [
   { to: "/", label: "Home", end: true },
   { to: "/about", label: "About" },
   { to: "/rewards", label: "Rewards" },
   { to: "/leaderboard", label: "Leaderboard" },
+  { to: "/walking", label: "Walking" },
 ];
 
 function linkClassName({ isActive }) {
@@ -19,10 +22,39 @@ function linkClassName({ isActive }) {
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  useLocation();
+  const { pathname } = useLocation();
+  const [me, setMe] = useState(null);
   const isAdmin =
     typeof window !== "undefined" &&
-    localStorage.getItem("role") === "admin";
+    localStorage.getItem(AUTH_ROLE_KEY) === "admin";
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem(AUTH_TOKEN_KEY) : "";
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadMe() {
+      if (!token) {
+        setMe(null);
+        return;
+      }
+      try {
+        const user = await getCurrentUser();
+        if (!mounted) return;
+        setMe(user);
+      } catch {
+        if (mounted) setMe(null);
+      }
+    }
+    loadMe();
+    return () => {
+      mounted = false;
+    };
+  }, [token, pathname]);
+
+  const profileInitial = useMemo(() => {
+    const source = me?.fullName || me?.email || "P";
+    return source.slice(0, 1).toUpperCase();
+  }, [me]);
 
   return (
     <header className="sticky top-0 z-40 mb-6">
@@ -51,21 +83,43 @@ export default function Navbar() {
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
-            <NavLink to="/login" className={linkClassName}>
-              Login
-            </NavLink>
-            <NavLink
-              to="/signup"
-              className={({ isActive }) =>
-                `rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out active:scale-[0.97] ${
-                  isActive
-                    ? "bg-gradient-to-b from-[#FF7518] to-[#FF5F1F] text-white shadow-lg shadow-[#FF5F1F]/35 ring-2 ring-[#FF7518]/45"
-                    : "bg-gradient-to-b from-[#FFA500] via-[#FF7518] to-[#FF5F1F] text-white shadow-md shadow-[#FF7518]/30 hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-lg"
-                }`
-              }
-            >
-              Sign up
-            </NavLink>
+            {token ? (
+              <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                  `flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition-all duration-300 ${
+                    isActive
+                      ? "bg-gradient-to-r from-[#FFA500]/25 to-[#FF7518]/20 text-[#7a2b00] ring-1 ring-[#FFA500]/40"
+                      : "bg-white text-stone-700 ring-1 ring-stone-200 hover:bg-[#FFA500]/10"
+                  }`
+                }
+              >
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-r from-[#FFA500] to-[#FF5F1F] text-xs font-bold text-white">
+                  {profileInitial}
+                </span>
+                <span className="max-w-[110px] truncate">
+                  {me?.fullName || "Profile"}
+                </span>
+              </NavLink>
+            ) : (
+              <>
+                <NavLink to="/login" className={linkClassName}>
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/signup"
+                  className={({ isActive }) =>
+                    `rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 ease-out active:scale-[0.97] ${
+                      isActive
+                        ? "bg-gradient-to-b from-[#FF7518] to-[#FF5F1F] text-white shadow-lg shadow-[#FF5F1F]/35 ring-2 ring-[#FF7518]/45"
+                        : "bg-gradient-to-b from-[#FFA500] via-[#FF7518] to-[#FF5F1F] text-white shadow-md shadow-[#FF7518]/30 hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-lg"
+                    }`
+                  }
+                >
+                  Sign up
+                </NavLink>
+              </>
+            )}
           </div>
 
           <button
@@ -110,26 +164,38 @@ export default function Navbar() {
               </NavLink>
             )}
             <div className="mt-2 flex flex-col gap-2 border-t border-stone-100 pt-3">
-              <NavLink
-                to="/login"
-                className={linkClassName}
-                onClick={() => setMenuOpen(false)}
-              >
-                Login
-              </NavLink>
-              <NavLink
-                to="/signup"
-                className={({ isActive }) =>
-                  `rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition-all duration-300 active:scale-[0.98] ${
-                    isActive
-                      ? "bg-gradient-to-b from-[#FF7518] to-[#FF5F1F] text-white shadow-lg shadow-[#FF5F1F]/30"
-                      : "bg-gradient-to-b from-[#FFA500] via-[#FF7518] to-[#FF5F1F] text-white shadow-md hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-lg"
-                  }`
-                }
-                onClick={() => setMenuOpen(false)}
-              >
-                Sign up
-              </NavLink>
+              {token ? (
+                <NavLink
+                  to="/profile"
+                  className={linkClassName}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Profile
+                </NavLink>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    className={linkClassName}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Login
+                  </NavLink>
+                  <NavLink
+                    to="/signup"
+                    className={({ isActive }) =>
+                      `rounded-xl px-3 py-2.5 text-center text-sm font-semibold transition-all duration-300 active:scale-[0.98] ${
+                        isActive
+                          ? "bg-gradient-to-b from-[#FF7518] to-[#FF5F1F] text-white shadow-lg shadow-[#FF5F1F]/30"
+                          : "bg-gradient-to-b from-[#FFA500] via-[#FF7518] to-[#FF5F1F] text-white shadow-md hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-lg"
+                      }`
+                    }
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Sign up
+                  </NavLink>
+                </>
+              )}
             </div>
           </div>
         )}

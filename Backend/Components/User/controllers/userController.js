@@ -86,4 +86,28 @@ const getUserById = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserById };
+// Get current logged-in user from JWT middleware
+const getCurrentUser = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    return res.status(200).json({
+      user: {
+        _id: req.user._id,
+        fullName: req.user.fullName,
+        email: req.user.email,
+        role: req.user.role,
+        totalPoints: req.user.totalPoints ?? 0,
+        totalCo2SavedKg: req.user.totalCo2SavedKg ?? 0,
+        totalDistanceKm: req.user.totalDistanceKm ?? 0,
+      },
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch current user", error: err.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserById, getCurrentUser };

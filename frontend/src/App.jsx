@@ -7,6 +7,8 @@ import Leaderboard from "./pages/Leaderboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
+import Walking from "./pages/Walking";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/rewards" element={<Rewards />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/walking" element={<Walking />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/admin" element={<Admin />} />

@@ -39,4 +39,37 @@ API.interceptors.response.use(
   }
 );
 
+export async function getCurrentUser() {
+  function normalizeUser(raw) {
+    if (!raw) return null;
+    return {
+      ...raw,
+      totalDistance: raw.totalDistance ?? raw.totalDistanceKm ?? 0,
+      totalCO2Saved: raw.totalCO2Saved ?? raw.totalCo2SavedKg ?? 0,
+    };
+  }
+
+  function tryGetUserIdFromToken() {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return "";
+      const payload = JSON.parse(atob(token.split(".")[1] || ""));
+      return payload?.id || payload?._id || payload?.userId || payload?.sub || "";
+    } catch {
+      return "";
+    }
+  }
+
+  try {
+    const { data } = await API.get("/users/me");
+    return normalizeUser(data?.user ?? data ?? null);
+  } catch (err) {
+    if (err?.response?.status !== 404) throw err;
+    const userId = tryGetUserIdFromToken();
+    if (!userId) throw err;
+    const { data } = await API.get(`/users/${userId}`);
+    return normalizeUser(data?.user ?? data ?? null);
+  }
+}
+
 export default API;
