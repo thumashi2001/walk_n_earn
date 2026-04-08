@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getMatchingHealthAdvice } from "../../services/healthService";
+import { getMatchingHealthAdvice } from "../../services/weather/healthService";
 
 export default function HealthAdviceCard() {
   const [advices, setAdvices] = useState([]);
@@ -16,11 +16,16 @@ export default function HealthAdviceCard() {
   // Helper to get icons based on the Category from your Schema
   const getCategoryIcon = (category) => {
     switch (category) {
-      case "Temperature": return "🌡️";
-      case "Rain / Storm": return "🌧️";
-      case "Wind": return "🌬️";
-      case "Humidity": return "💧";
-      default: return "✨";
+      case "Temperature":
+        return "🌡️";
+      case "Rain / Storm":
+        return "🌧️";
+      case "Wind":
+        return "🌬️";
+      case "Humidity":
+        return "💧";
+      default:
+        return "✨";
     }
   };
 
@@ -43,13 +48,20 @@ export default function HealthAdviceCard() {
                 animate={{ opacity: 1, x: 0 }}
                 // Dynamic styling based on Severity
                 className={`flex items-start gap-4 p-4 rounded-2xl bg-white/70 shadow-sm ring-1 transition-all
-                  ${advice.severity === "Caution" || advice.severity === "Moderate" 
-                    ? "ring-amber-300 bg-amber-50/40" 
-                    : "ring-stone-100"}`}
+                  ${
+                    advice.severity === "Caution" ||
+                    advice.severity === "Moderate"
+                      ? "ring-amber-300 bg-amber-50/40"
+                      : "ring-stone-100"
+                  }`}
               >
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-sm
-                  ${advice.priority === 1 ? "bg-amber-100 text-amber-600" : "bg-stone-50 text-stone-500"}`}>
-                  <span className="text-xl">{getCategoryIcon(advice.category)}</span>
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-sm
+                  ${advice.priority === 1 ? "bg-amber-100 text-amber-600" : "bg-stone-50 text-stone-500"}`}
+                >
+                  <span className="text-xl">
+                    {getCategoryIcon(advice.category)}
+                  </span>
                 </div>
 
                 <div className="flex-1">
@@ -58,14 +70,19 @@ export default function HealthAdviceCard() {
                       {advice.title}
                     </p>
                     {/* Severity Badge */}
-                    <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md border
-                      ${advice.severity === "Caution" || advice.severity === "Moderate"
-                        ? "bg-amber-100 border-amber-200 text-amber-700"
-                        : "bg-stone-50 border-stone-200 text-stone-500"}`}>
+                    <span
+                      className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-md border
+                      ${
+                        advice.severity === "Caution" ||
+                        advice.severity === "Moderate"
+                          ? "bg-amber-100 border-amber-200 text-amber-700"
+                          : "bg-stone-50 border-stone-200 text-stone-500"
+                      }`}
+                    >
                       {advice.severity}
                     </span>
                   </div>
-                  
+
                   {/* Corrected field name from Schema: advice.advice */}
                   <p className="text-xs text-stone-600 leading-relaxed mt-1.5">
                     {advice.advice}

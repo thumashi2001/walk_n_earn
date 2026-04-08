@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { getLiveWeatherDetails } from "../../services/weatherService";
+import { getLiveWeatherDetails } from "../../services/weather/weatherService";
 
 export default function LocalWeatherCard() {
   const [weather, setWeather] = useState(null);
