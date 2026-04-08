@@ -2,6 +2,53 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { getCurrentUser } from "../services/api";
 import { AUTH_ROLE_KEY, AUTH_TOKEN_KEY } from "../services/auth";
+import DarkModeToggle from "./DarkModeToggle";
+import NotificationBell from "./NotificationBell";
+import NotificationDropdown from "./NotificationDropdown";
+
+const NOTIF_STORAGE_KEY = "notifications";
+
+function seedNotifications() {
+  const now = Date.now();
+  return [
+    {
+      id: "n1",
+      message: "You are #1 this week! You earned 1000 points 🎉",
+      timestamp: now - 1000 * 60 * 40,
+      type: "reward",
+      read: false,
+    },
+    {
+      id: "n2",
+      message: "Reward redeemed successfully",
+      timestamp: now - 1000 * 60 * 60 * 10,
+      type: "system",
+      read: true,
+    },
+    {
+      id: "n3",
+      message: "Keep walking to earn more points",
+      timestamp: now - 1000 * 60 * 60 * 30,
+      type: "alert",
+      read: false,
+    },
+  ];
+}
+
+function loadNotifications() {
+  try {
+    const raw = localStorage.getItem(NOTIF_STORAGE_KEY);
+    if (!raw) return seedNotifications();
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : seedNotifications();
+  } catch {
+    return seedNotifications();
+  }
+}
+
+function saveNotifications(list) {
+  localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(list));
+}
 
 const navItems = [
   { to: "/", label: "Home", end: true },
@@ -15,15 +62,17 @@ function linkClassName({ isActive }) {
   const base =
     "rounded-full px-3 py-2 text-sm font-medium transition-all duration-300 ease-out";
   if (isActive) {
-    return `${base} bg-gradient-to-b from-[#FFA500]/20 to-[#FF7518]/10 text-[#7a2b00] shadow-md shadow-[#FF7518]/20 ring-1 ring-[#FFA500]/35`;
+    return `${base} bg-gradient-to-b from-[#FFA500]/20 to-[#FF7518]/10 text-[#7a2b00] shadow-md shadow-[#FF7518]/20 ring-1 ring-[#FFA500]/35 dark:text-stone-100 dark:ring-white/10`;
   }
-  return `${base} text-stone-600 hover:bg-white/90 hover:text-stone-900 hover:shadow-sm hover:shadow-stone-200/50`;
+  return `${base} text-stone-600 hover:bg-white/90 hover:text-stone-900 hover:shadow-sm hover:shadow-stone-200/50 dark:text-stone-300 dark:hover:bg-white/10 dark:hover:text-stone-100`;
 }
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
   const [me, setMe] = useState(null);
+  const [notifsOpen, setNotifsOpen] = useState(false);
+  const [notifications, setNotifications] = useState(() => loadNotifications());
   const isAdmin =
     typeof window !== "undefined" &&
     localStorage.getItem(AUTH_ROLE_KEY) === "admin";
@@ -56,14 +105,35 @@ export default function Navbar() {
     return source.slice(0, 1).toUpperCase();
   }, [me]);
 
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.read).length,
+    [notifications]
+  );
+
+  function markRead(id) {
+    setNotifications((prev) => {
+      const next = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
+      saveNotifications(next);
+      return next;
+    });
+  }
+
+  function markAllRead() {
+    setNotifications((prev) => {
+      const next = prev.map((n) => ({ ...n, read: true }));
+      saveNotifications(next);
+      return next;
+    });
+  }
+
   return (
     <header className="sticky top-0 z-40 mb-6">
-      <nav className="rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-lg shadow-stone-300/25 ring-1 ring-stone-200/60 backdrop-blur-md transition-shadow duration-500 hover:shadow-xl hover:shadow-stone-300/30 sm:px-6">
+      <nav className="rounded-2xl border border-white/60 bg-white/90 px-4 py-3 shadow-lg shadow-stone-300/25 ring-1 ring-stone-200/60 backdrop-blur-md transition-shadow duration-500 hover:shadow-xl hover:shadow-stone-300/30 sm:px-6 dark:border-white/10 dark:bg-stone-950/70 dark:shadow-none dark:ring-white/10">
         <div className="flex items-center justify-between gap-4">
           <NavLink
             to="/"
             end
-            className="shrink-0 text-lg font-semibold tracking-tight text-[#7a2b00] transition-all duration-300 hover:text-[#5f2100] hover:drop-shadow-sm active:scale-[0.98]"
+            className="shrink-0 text-lg font-semibold tracking-tight text-[#7a2b00] transition-all duration-300 hover:text-[#5f2100] hover:drop-shadow-sm active:scale-[0.98] dark:text-stone-100 dark:hover:text-white"
             onClick={() => setMenuOpen(false)}
           >
             Walk n Earn
@@ -82,7 +152,21 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="hidden items-center gap-2 md:flex">
+          <div className="relative hidden items-center gap-2 md:flex">
+            <DarkModeToggle />
+            <div className="relative">
+              <NotificationBell
+                unreadCount={unreadCount}
+                onClick={() => setNotifsOpen((v) => !v)}
+              />
+              <NotificationDropdown
+                open={notifsOpen}
+                notifications={notifications}
+                onMarkRead={markRead}
+                onMarkAllRead={markAllRead}
+                onClose={() => setNotifsOpen(false)}
+              />
+            </div>
             {token ? (
               <NavLink
                 to="/profile"
@@ -90,7 +174,7 @@ export default function Navbar() {
                   `flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition-all duration-300 ${
                     isActive
                       ? "bg-gradient-to-r from-[#FFA500]/25 to-[#FF7518]/20 text-[#7a2b00] ring-1 ring-[#FFA500]/40"
-                      : "bg-white text-stone-700 ring-1 ring-stone-200 hover:bg-[#FFA500]/10"
+                      : "bg-white text-stone-700 ring-1 ring-stone-200 hover:bg-[#FFA500]/10 dark:bg-white/5 dark:text-stone-200 dark:ring-white/10 dark:hover:bg-white/10"
                   }`
                 }
               >
@@ -124,7 +208,7 @@ export default function Navbar() {
 
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b from-stone-50 to-stone-100/90 text-stone-700 shadow-md shadow-stone-300/20 ring-1 ring-stone-200/80 transition-all duration-300 hover:shadow-lg active:scale-95 md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b from-stone-50 to-stone-100/90 text-stone-700 shadow-md shadow-stone-300/20 ring-1 ring-stone-200/80 transition-all duration-300 hover:shadow-lg active:scale-95 md:hidden dark:from-stone-900/70 dark:to-stone-900/50 dark:text-stone-100 dark:ring-white/10"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((o) => !o)}
@@ -133,9 +217,9 @@ export default function Navbar() {
               <span className="text-xl leading-none">×</span>
             ) : (
               <span className="flex flex-col gap-1.5" aria-hidden>
-                    <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00]" />
-                <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00]" />
-                <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00]" />
+                <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00] dark:bg-stone-100" />
+                <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00] dark:bg-stone-100" />
+                <span className="block h-0.5 w-5 rounded-full bg-[#7a2b00] dark:bg-stone-100" />
               </span>
             )}
           </button>
