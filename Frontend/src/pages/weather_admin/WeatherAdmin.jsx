@@ -4,15 +4,17 @@ import { AUTH_ROLE_KEY, AUTH_TOKEN_KEY } from "../../services/auth";
 import { 
   fetchAllAdvices, 
   deleteAdvice, 
-  createHealthAdvice 
+  createHealthAdvice,
+  updateHealthAdvice 
 } from "../../services/weather/adminWeatherService";
 import AdviceList from "../weather_admin/AdviceList";
-import AdviceForm from "../../pages/weather_admin/AdviceForm"; // Ensure path is correct
+import AdviceForm from "../../pages/weather_admin/AdviceForm";
 
 export default function WeatherAdmin() {
   const [advices, setAdvices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedAdvice, setSelectedAdvice] = useState(null); // Tracks advice for editing
   const [error, setError] = useState(null);
 
   // Load data from backend
@@ -34,14 +36,32 @@ export default function WeatherAdmin() {
     loadData();
   }, [loadData]);
 
-  // Handle Create
-  const handleCreate = async (newData) => {
+  // Open form for NEW advice
+  const handleOpenCreate = () => {
+    setSelectedAdvice(null);
+    setIsFormOpen(true);
+  };
+
+  // Open form for EDITING existing advice
+  const handleOpenEdit = (advice) => {
+    setSelectedAdvice(advice);
+    setIsFormOpen(true);
+  };
+
+  // Unified Submit Handler (handles both Create and Update)
+  const handleFormSubmit = async (formData) => {
     try {
-      await createHealthAdvice(newData);
+      if (selectedAdvice) {
+        // UPDATE Existing
+        await updateHealthAdvice(selectedAdvice._id, formData);
+      } else {
+        // CREATE New
+        await createHealthAdvice(newData);
+      }
       setIsFormOpen(false);
-      loadData(); // Refresh list after adding
+      loadData(); // Refresh table
     } catch (err) {
-      alert(err.message || "Failed to create advice. Check trigger logic.");
+      alert(err.message || "Operation failed. Please check validation logic.");
     }
   };
 
@@ -74,7 +94,7 @@ export default function WeatherAdmin() {
             </p>
           </div>
           <button 
-            onClick={() => setIsFormOpen(true)}
+            onClick={handleOpenCreate}
             className="rounded-2xl bg-stone-900 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-stone-900/20 transition-all hover:bg-stone-800 active:scale-95"
           >
             + New Advice
@@ -95,14 +115,16 @@ export default function WeatherAdmin() {
           advices={advices} 
           loading={loading} 
           onDelete={handleDelete} 
+          onEdit={handleOpenEdit} // Pass the edit trigger to the list
         />
       </section>
 
-      {/* Creation Modal */}
+      {/* Modular Form (Used for both Create and Edit) */}
       <AdviceForm 
         isOpen={isFormOpen} 
         onClose={() => setIsFormOpen(false)} 
-        onSuccess={handleCreate} 
+        onSuccess={handleFormSubmit} 
+        initialData={selectedAdvice} // Pass selected data if in Edit mode
       />
     </div>
   );

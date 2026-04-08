@@ -22,3 +22,7 @@ export const createHealthAdvice = async (adviceData) => {
   return response.data;
 };
 
+export const updateHealthAdvice = async (id, adviceData) => {
+  const response = await axios.put(`${API_URL}/${id}`, adviceData, getHeaders());
+  return response.data;
+};
