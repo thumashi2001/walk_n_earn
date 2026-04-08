@@ -16,3 +16,9 @@ export const deleteAdvice = async (id) => {
   const response = await axios.delete(`${API_URL}/${id}`, getHeaders());
   return response.data;
 };
+
+export const createHealthAdvice = async (adviceData) => {
+  const response = await axios.post(API_URL, adviceData, getHeaders());
+  return response.data;
+};
+
