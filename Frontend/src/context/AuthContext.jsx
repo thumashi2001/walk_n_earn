@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
-  // Call after a successful redemption so the points badge in the Navbar updates
+  // Call after a successful redemption so the points badge in the Navbar updates.
   const refreshUser = useCallback((updatedFields) => {
     setUser((prev) => {
       if (!prev) return prev;
