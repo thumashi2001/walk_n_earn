@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
-  // Already logged in → go to app
+  // Already logged in → go to app directly
   if (token) return <Navigate to="/leaderboard" replace />;
 
   const handleChange = (e) =>
