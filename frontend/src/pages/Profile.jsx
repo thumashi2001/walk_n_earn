@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { getCurrentUser } from "../services/api";
 import { AUTH_ROLE_KEY, AUTH_TOKEN_KEY, clearSession } from "../services/auth";
 import ActivityItem from "../components/ActivityItem";
 import RedeemItem from "../components/RedeemItem";
 import BadgeCard from "../components/BadgeCard";
+import Sidebar from "../components/Sidebar";
+import SettingsModal from "../components/SettingsModal";
 
 const DEFAULT_LOCATION = "Location unavailable";
 const PROFILE_LOCAL_KEY = "profileLocal";
@@ -61,6 +63,7 @@ function formatNotifTime(ts) {
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const token = localStorage.getItem(AUTH_TOKEN_KEY);
   const role = localStorage.getItem(AUTH_ROLE_KEY) || "user";
 
@@ -70,6 +73,7 @@ export default function Profile() {
   const [avatarPreview, setAvatarPreview] = useState("");
   const [locationText, setLocationText] = useState(DEFAULT_LOCATION);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -225,12 +229,21 @@ export default function Profile() {
 
   if (!token) return <Navigate to="/login" replace />;
 
+  const activeKey = useMemo(() => {
+    if (pathname === "/") return "home";
+    if (pathname.startsWith("/profile")) return "profile";
+    if (pathname.startsWith("/location")) return "location";
+    if (pathname.startsWith("/leaderboard")) return "leaderboard";
+    return "profile";
+  }, [pathname]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-stone-800 dark:text-stone-100">
-            Welcome{user?.fullName ? `, ${user.fullName}` : ""}
+          <p className="text-2xl font-extrabold tracking-tight text-stone-900 dark:text-stone-50 sm:text-3xl">
+            Welcome{user?.fullName ? `, ${user.fullName}` : ""}{" "}
+            <span aria-hidden>👋</span>
           </p>
           <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
             {new Date().toLocaleDateString(undefined, {
@@ -290,16 +303,11 @@ export default function Profile() {
       ) : (
         <div className="grid gap-6 lg:grid-cols-[84px_1fr]">
           <aside className="hidden lg:flex">
-            <div className="flex w-full flex-col items-center gap-3 rounded-3xl border border-white/60 bg-white/80 py-5 shadow-sm ring-1 ring-stone-200/60 dark:border-white/10 dark:bg-stone-950/60 dark:ring-white/10">
-              {["🏠", "👤", "📍", "🏆", "⚙️"].map((ic) => (
-                <div
-                  key={ic}
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-sm ring-1 ring-stone-200/60 transition-all duration-200 hover:bg-[#FFA500]/10 dark:bg-white/5 dark:ring-white/10 dark:hover:bg-white/10"
-                >
-                  <span className="text-lg">{ic}</span>
-                </div>
-              ))}
-            </div>
+            <Sidebar
+              activeKey={activeKey}
+              onNavigate={(to) => navigate(to)}
+              onOpenSettings={() => setSettingsOpen(true)}
+            />
           </aside>
 
           <div className="space-y-6">
@@ -564,6 +572,12 @@ export default function Profile() {
           </div>
         </div>
       )}
+
+      <SettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onLogout={handleLogout}
+      />
     </div>
   );
 }
