@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -10,6 +10,19 @@ import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Walking from "./pages/Walking";
 import Location from "./pages/Location";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+function RoleLanding() {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role") || "";
+  if (!token) return <Home />;
+  return role === "admin" ? (
+    <Admin />
+  ) : (
+    <Dashboard />
+  );
+}
 
 function App() {
   return (
@@ -27,16 +40,77 @@ function App() {
           <Navbar />
           <main className="min-h-[50vh]">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/rewards" element={<Rewards />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/walking" element={<Walking />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/location" element={<Location />} />
+              <Route path="/" element={<RoleLanding />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <About />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/rewards"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Rewards />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leaderboard"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Leaderboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/walking"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Walking />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/location"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Location />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route
+                path="/admin-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={<Navigate to="/admin-dashboard" replace />}
+              />
             </Routes>
           </main>
         </div>

@@ -35,7 +35,9 @@ export default function Login() {
         return;
       }
       persistSession({ token, role });
-      navigate(role === "admin" ? "/admin" : "/rewards", { replace: true });
+      navigate(role === "admin" ? "/admin-dashboard" : "/dashboard", {
+        replace: true,
+      });
     } catch (err) {
       setError(
         getAuthErrorMessage(err, {

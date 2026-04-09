@@ -1,13 +1,19 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5050/api",
+  baseURL: import.meta.env?.VITE_API_URL || "http://localhost:5050/api",
 });
 
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
+  }
+  if (import.meta.env?.DEV) {
+    // eslint-disable-next-line no-console
+    console.log("[API request]", req.method?.toUpperCase(), req.baseURL + req.url, {
+      hasToken: Boolean(token),
+    });
   }
   return req;
 });
@@ -22,7 +28,13 @@ function redirectToLogin() {
 }
 
 API.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (import.meta.env?.DEV) {
+      // eslint-disable-next-line no-console
+      console.log("[API response]", res.config?.url, res.status, res.data);
+    }
+    return res;
+  },
   (err) => {
     const status = err.response?.status;
     const msg = err.response?.data?.message;
@@ -38,6 +50,18 @@ API.interceptors.response.use(
     return Promise.reject(err);
   }
 );
+
+export function getFriendlyApiError(
+  err,
+  { fallback = "Something went wrong. Please try again." } = {}
+) {
+  const status = err?.response?.status;
+  if (status === 401 || status === 403) return "Unauthorized access.";
+  if (status >= 500) return "Server error. Please try again later.";
+  const msg = err?.response?.data?.message;
+  if (typeof msg === "string" && msg.trim()) return msg;
+  return fallback;
+}
 
 export async function getCurrentUser() {
   function normalizeUser(raw) {

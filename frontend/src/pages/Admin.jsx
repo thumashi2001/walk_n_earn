@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   AUTH_ROLE_KEY,
   AUTH_TOKEN_KEY,
+  clearSession,
   getAuthErrorMessage,
 } from "../services/auth";
 import { fetchRewardsList } from "../services/rewards";
+import API, { getFriendlyApiError } from "../services/api";
 import RewardFormModal from "../components/admin/RewardFormModal";
 import DeleteRewardModal from "../components/admin/DeleteRewardModal";
 import { getRewardImageUrl } from "../utils/rewardImages";
+import RedemptionTable from "../components/RedemptionTable";
+import UserTable from "../components/UserTable";
 
 function isAdminSession() {
   const token = localStorage.getItem(AUTH_TOKEN_KEY);
@@ -26,16 +30,23 @@ export default function Admin() {
     return <Navigate to="/login" replace />;
   }
   if (!isAdminSession()) {
-    return <Navigate to="/rewards" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <AdminDashboard />;
 }
 
 function AdminDashboard() {
+  const navigate = useNavigate();
   const [rewards, setRewards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [listError, setListError] = useState("");
+  const [redemptions, setRedemptions] = useState([]);
+  const [redemptionsLoading, setRedemptionsLoading] = useState(true);
+  const [redemptionsError, setRedemptionsError] = useState("");
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [usersError, setUsersError] = useState("");
   const [flash, setFlash] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editingReward, setEditingReward] = useState(null);
@@ -61,6 +72,74 @@ function AdminDashboard() {
   useEffect(() => {
     loadRewards();
   }, [loadRewards]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadRedemptions() {
+      setRedemptionsError("");
+      setRedemptionsLoading(true);
+      try {
+        const token = localStorage.getItem(AUTH_TOKEN_KEY);
+        // eslint-disable-next-line no-console
+        console.log("[Admin] token?", Boolean(token));
+        const res = await API.get("/rewards/redemptions", {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        // eslint-disable-next-line no-console
+        console.log("[Admin] redemptions response", res.data);
+        const rows = Array.isArray(res.data) ? res.data : [];
+        if (mounted) setRedemptions(rows);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("[Admin] redemptions error", err);
+        if (mounted) {
+          setRedemptionsError(
+            getFriendlyApiError(err, {
+              fallback: "Could not load redemption history.",
+            })
+          );
+          setRedemptions([]);
+        }
+      } finally {
+        if (mounted) setRedemptionsLoading(false);
+      }
+    }
+
+    async function loadUsers() {
+      setUsersError("");
+      setUsersLoading(true);
+      try {
+        const token = localStorage.getItem(AUTH_TOKEN_KEY);
+        const res = await API.get("/users", {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        // eslint-disable-next-line no-console
+        console.log("[Admin] users response", res.data);
+        const rows = Array.isArray(res.data) ? res.data : [];
+        if (mounted) setUsers(rows);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error("[Admin] users error", err);
+        if (mounted) {
+          setUsersError(
+            getFriendlyApiError(err, {
+              fallback: "Could not load users.",
+            })
+          );
+          setUsers([]);
+        }
+      } finally {
+        if (mounted) setUsersLoading(false);
+      }
+    }
+
+    loadRedemptions();
+    loadUsers();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   function openCreate() {
     setEditingReward(null);
@@ -89,6 +168,11 @@ function AdminDashboard() {
     loadRewards();
   }
 
+  function handleLogout() {
+    clearSession();
+    navigate("/login", { replace: true });
+  }
+
   const activeCount = rewards.filter((r) => r.isActive !== false).length;
 
   return (
@@ -107,16 +191,28 @@ function AdminDashboard() {
               page.
             </p>
           </div>
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            onClick={openCreate}
-            className="shrink-0 rounded-2xl bg-gradient-to-r from-[#FFA500] via-[#FF7518] to-[#FF5F1F] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#FF7518]/35 transition-all duration-300 hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-xl"
-          >
-            + Add reward
-          </motion.button>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              onClick={openCreate}
+              className="shrink-0 rounded-2xl bg-gradient-to-r from-[#FFA500] via-[#FF7518] to-[#FF5F1F] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#FF7518]/35 transition-all duration-300 hover:from-[#FF7518] hover:via-[#FF5F1F] hover:to-[#FF5F1F] hover:shadow-xl"
+            >
+              + Add reward
+            </motion.button>
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              onClick={handleLogout}
+              className="shrink-0 rounded-2xl border border-[#FF7518]/35 bg-white px-5 py-3 text-sm font-semibold text-[#7a2b00] shadow-md shadow-[#FF7518]/10 transition-all duration-300 hover:bg-[#FFA500]/10 hover:shadow-lg"
+            >
+              Logout
+            </motion.button>
+          </div>
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -265,6 +361,14 @@ function AdminDashboard() {
           </div>
         )}
       </section>
+
+      <RedemptionTable
+        rows={redemptions}
+        loading={redemptionsLoading}
+        error={redemptionsError}
+      />
+
+      <UserTable users={users} loading={usersLoading} error={usersError} />
 
       <RewardFormModal
         open={formOpen}

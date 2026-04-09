@@ -113,3 +113,25 @@ exports.redeemReward = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Admin: view redemption history
+exports.getRedemptions = async (req, res) => {
+  try {
+    const list = await Redemption.find()
+      .sort({ createdAt: -1 })
+      .populate("userId", "fullName email")
+      .populate("rewardId", "title");
+
+    const rows = list.map((r) => ({
+      _id: r._id,
+      userName: r.userId?.fullName ?? "Unknown",
+      rewardName: r.rewardId?.title ?? "Unknown",
+      pointsUsed: r.pointsUsed,
+      createdAt: r.createdAt,
+    }));
+
+    return res.status(200).json(rows);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

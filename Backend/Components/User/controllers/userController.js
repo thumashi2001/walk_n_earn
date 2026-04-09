@@ -110,4 +110,14 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserById, getCurrentUser };
+// Admin: list all users (without passwordHash)
+const listUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-passwordHash").sort({ createdAt: -1 });
+    return res.status(200).json(users);
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to fetch users", error: err.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserById, getCurrentUser, listUsers };

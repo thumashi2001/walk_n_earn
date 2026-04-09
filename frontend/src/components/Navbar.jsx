@@ -8,9 +8,9 @@ import NotificationDropdown from "./NotificationDropdown";
 
 const NOTIF_STORAGE_KEY = "notifications";
 
-function seedNotifications() {
+function seedNotifications(isAdmin) {
   const now = Date.now();
-  return [
+  const base = [
     {
       id: "n1",
       message: "You are #1 this week! You earned 1000 points 🎉",
@@ -33,16 +33,35 @@ function seedNotifications() {
       read: false,
     },
   ];
+
+  if (!isAdmin) return base;
+  return [
+    {
+      id: "a1",
+      message: "User redeemed a reward",
+      timestamp: now - 1000 * 60 * 15,
+      type: "system",
+      read: false,
+    },
+    {
+      id: "a2",
+      message: "New user registered",
+      timestamp: now - 1000 * 60 * 60 * 6,
+      type: "system",
+      read: true,
+    },
+    ...base,
+  ];
 }
 
-function loadNotifications() {
+function loadNotifications(isAdmin) {
   try {
     const raw = localStorage.getItem(NOTIF_STORAGE_KEY);
-    if (!raw) return seedNotifications();
+    if (!raw) return seedNotifications(isAdmin);
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : seedNotifications();
+    return Array.isArray(parsed) ? parsed : seedNotifications(isAdmin);
   } catch {
-    return seedNotifications();
+    return seedNotifications(isAdmin);
   }
 }
 
@@ -50,13 +69,15 @@ function saveNotifications(list) {
   localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(list));
 }
 
-const navItems = [
+const userNavItems = [
   { to: "/", label: "Home", end: true },
   { to: "/about", label: "About" },
   { to: "/rewards", label: "Rewards" },
   { to: "/leaderboard", label: "Leaderboard" },
   { to: "/walking", label: "Walking" },
 ];
+
+const adminNavItems = [{ to: "/admin-dashboard", label: "Admin Dashboard" }];
 
 function linkClassName({ isActive }) {
   const base =
@@ -72,7 +93,12 @@ export default function Navbar() {
   const { pathname } = useLocation();
   const [me, setMe] = useState(null);
   const [notifsOpen, setNotifsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(() => loadNotifications());
+  const [notifications, setNotifications] = useState(() =>
+    loadNotifications(
+      typeof window !== "undefined" &&
+        localStorage.getItem(AUTH_ROLE_KEY) === "admin"
+    )
+  );
   const isAdmin =
     typeof window !== "undefined" &&
     localStorage.getItem(AUTH_ROLE_KEY) === "admin";
@@ -140,51 +166,50 @@ export default function Navbar() {
           </NavLink>
 
           <div className="hidden items-center gap-1 md:flex">
-            {navItems.map(({ to, label, end }) => (
+            {(isAdmin ? adminNavItems : userNavItems).map(({ to, label, end }) => (
               <NavLink key={to} to={to} end={end} className={linkClassName}>
                 {label}
               </NavLink>
             ))}
-            {isAdmin && (
-              <NavLink to="/admin" className={linkClassName}>
-                Admin
-              </NavLink>
-            )}
           </div>
 
           <div className="relative hidden items-center gap-2 md:flex">
             <DarkModeToggle />
-            <div className="relative">
-              <NotificationBell
-                unreadCount={unreadCount}
-                onClick={() => setNotifsOpen((v) => !v)}
-              />
-              <NotificationDropdown
-                open={notifsOpen}
-                notifications={notifications}
-                onMarkRead={markRead}
-                onMarkAllRead={markAllRead}
-                onClose={() => setNotifsOpen(false)}
-              />
-            </div>
+            {!isAdmin ? (
+              <div className="relative">
+                <NotificationBell
+                  unreadCount={unreadCount}
+                  onClick={() => setNotifsOpen((v) => !v)}
+                />
+                <NotificationDropdown
+                  open={notifsOpen}
+                  notifications={notifications}
+                  onMarkRead={markRead}
+                  onMarkAllRead={markAllRead}
+                  onClose={() => setNotifsOpen(false)}
+                />
+              </div>
+            ) : null}
             {token ? (
-              <NavLink
-                to="/profile"
-                className={({ isActive }) =>
-                  `flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition-all duration-300 ${
-                    isActive
-                      ? "bg-gradient-to-r from-[#FFA500]/25 to-[#FF7518]/20 text-[#7a2b00] ring-1 ring-[#FFA500]/40"
-                      : "bg-white text-stone-700 ring-1 ring-stone-200 hover:bg-[#FFA500]/10 dark:bg-white/5 dark:text-stone-200 dark:ring-white/10 dark:hover:bg-white/10"
-                  }`
-                }
-              >
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-r from-[#FFA500] to-[#FF5F1F] text-xs font-bold text-white">
-                  {profileInitial}
-                </span>
-                <span className="max-w-[110px] truncate">
-                  {me?.fullName || "Profile"}
-                </span>
-              </NavLink>
+              !isAdmin ? (
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    `flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-semibold transition-all duration-300 ${
+                      isActive
+                        ? "bg-gradient-to-r from-[#FFA500]/25 to-[#FF7518]/20 text-[#7a2b00] ring-1 ring-[#FFA500]/40"
+                        : "bg-white text-stone-700 ring-1 ring-stone-200 hover:bg-[#FFA500]/10 dark:bg-white/5 dark:text-stone-200 dark:ring-white/10 dark:hover:bg-white/10"
+                    }`
+                  }
+                >
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-r from-[#FFA500] to-[#FF5F1F] text-xs font-bold text-white">
+                    {profileInitial}
+                  </span>
+                  <span className="max-w-[110px] truncate">
+                    {me?.fullName || "Profile"}
+                  </span>
+                </NavLink>
+              ) : null
             ) : (
               <>
                 <NavLink to="/login" className={linkClassName}>
@@ -227,7 +252,7 @@ export default function Navbar() {
 
         {menuOpen && (
           <div className="mt-4 flex flex-col gap-1 border-t border-stone-100 pt-4 md:hidden">
-            {navItems.map(({ to, label, end }) => (
+            {(isAdmin ? adminNavItems : userNavItems).map(({ to, label, end }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -238,24 +263,17 @@ export default function Navbar() {
                 {label}
               </NavLink>
             ))}
-            {isAdmin && (
-              <NavLink
-                to="/admin"
-                className={linkClassName}
-                onClick={() => setMenuOpen(false)}
-              >
-                Admin
-              </NavLink>
-            )}
             <div className="mt-2 flex flex-col gap-2 border-t border-stone-100 pt-3">
               {token ? (
-                <NavLink
-                  to="/profile"
-                  className={linkClassName}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Profile
-                </NavLink>
+                !isAdmin ? (
+                  <NavLink
+                    to="/profile"
+                    className={linkClassName}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Profile
+                  </NavLink>
+                ) : null
               ) : (
                 <>
                   <NavLink
