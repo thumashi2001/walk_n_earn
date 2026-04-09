@@ -1,15 +1,17 @@
-import axios from "axios";
+import API from "../api"; // Import your centralized instance
 import { getCurrentCoordinates } from "../../utils/geo";
 
-const API_BASE_URL = "http://localhost:5050/api/user/health-advice";
+// Path relative to baseURL: "http://localhost:5050/api"
+const ENDPOINT = "/user/health-advice/current";
 
 export const getMatchingHealthAdvice = async () => {
   try {
     // 1. Get coordinates from the shared utility
     const { latitude, longitude } = await getCurrentCoordinates();
 
-    // 2. Fetch advice from your specific backend endpoint
-    const response = await axios.get(`${API_BASE_URL}/current`, {
+    // 2. Fetch advice using centralized API instance
+    // Token and Base URL are handled automatically
+    const response = await API.get(ENDPOINT, {
       params: { lat: latitude, lon: longitude },
     });
 

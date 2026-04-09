@@ -1,28 +1,23 @@
-import axios from "axios";
-import { AUTH_TOKEN_KEY } from "../auth";
+import API from "../api";
 
-const API_URL = "http://localhost:5050/api/admin/health-advice";
-
-const getHeaders = () => ({
-  headers: { Authorization: `Bearer ${localStorage.getItem(AUTH_TOKEN_KEY)}` },
-});
+const ENDPOINT = "/admin/health-advice";
 
 export const fetchAllAdvices = async () => {
-  const response = await axios.get(API_URL, getHeaders());
-  return response.data.data; // Matches: res.status(200).json({ data: advices })
+  const response = await API.get(ENDPOINT);
+  return response.data.data;
 };
 
 export const deleteAdvice = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`, getHeaders());
+  const response = await API.delete(`${ENDPOINT}/${id}`);
   return response.data;
 };
 
 export const createHealthAdvice = async (adviceData) => {
-  const response = await axios.post(API_URL, adviceData, getHeaders());
+  const response = await API.post(ENDPOINT, adviceData);
   return response.data;
 };
 
 export const updateHealthAdvice = async (id, adviceData) => {
-  const response = await axios.put(`${API_URL}/${id}`, adviceData, getHeaders());
+  const response = await API.put(`${ENDPOINT}/${id}`, adviceData);
   return response.data;
 };

@@ -1,23 +1,25 @@
-import axios from "axios";
+import axios from "axios"; // Keep standard axios only for external 3rd party calls
+import API from "../api";   // Use your API instance for your own backend
 import { getCurrentCoordinates } from "../../utils/geo";
 
-const API_BASE_URL = "http://localhost:5050/api/weather";
+const ENDPOINT = "/weather/current";
 
 export const getLiveWeatherDetails = async () => {
   try {
     // 1. Get coordinates from our shared utility
     const { latitude, longitude } = await getCurrentCoordinates();
 
-    // 2. Fetch weather from your backend (Existing logic)
-    const weatherResponse = await axios.get(`${API_BASE_URL}/current`, {
+    // 2. Fetch weather from YOUR backend using centralized API
+    const weatherResponse = await API.get(ENDPOINT, {
       params: { lat: latitude, lon: longitude },
     });
 
-    // 3. Fetch location name via Reverse Geocoding (Existing logic)
+    // 3. Fetch location name via Reverse Geocoding 
+    // We use standard 'axios' here because this is an external API, not our backend
     let locationName = "Unknown Location";
     try {
       const geoResponse = await axios.get(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
       );
       locationName =
         geoResponse.data.address.city ||
@@ -34,7 +36,6 @@ export const getLiveWeatherDetails = async () => {
       locationName: locationName,
     };
   } catch (error) {
-    // Preserving your specific error handling logic
     const msg =
       error.response?.data?.message ||
       error.message ||
