@@ -42,7 +42,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* User info + logout system */}
+        {/* User info + logout system  */}
         <div className="flex items-center gap-3">
           <span className="hidden sm:flex items-center gap-1 text-sm text-green-600 font-semibold">
             ⭐ {user?.totalPoints ?? 0} pts
