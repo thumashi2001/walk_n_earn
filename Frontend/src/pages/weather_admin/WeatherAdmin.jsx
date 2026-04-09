@@ -56,7 +56,7 @@ export default function WeatherAdmin() {
         await updateHealthAdvice(selectedAdvice._id, formData);
       } else {
         // CREATE New
-        await createHealthAdvice(newData);
+        await createHealthAdvice(formData);
       }
       setIsFormOpen(false);
       loadData(); // Refresh table
