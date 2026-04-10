@@ -2,72 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { getCurrentUser } from "../services/api";
 import { AUTH_ROLE_KEY, AUTH_TOKEN_KEY } from "../services/auth";
+import {
+  loadStoredNotifications,
+  saveStoredNotifications,
+  subscribeToNotificationUpdates,
+} from "../utils/notifications";
 import DarkModeToggle from "./DarkModeToggle";
 import NotificationBell from "./NotificationBell";
 import NotificationDropdown from "./NotificationDropdown";
-
-const NOTIF_STORAGE_KEY = "notifications";
-
-function seedNotifications(isAdmin) {
-  const now = Date.now();
-  const base = [
-    {
-      id: "n1",
-      message: "You are #1 this week! You earned 1000 points 🎉",
-      timestamp: now - 1000 * 60 * 40,
-      type: "reward",
-      read: false,
-    },
-    {
-      id: "n2",
-      message: "Reward redeemed successfully",
-      timestamp: now - 1000 * 60 * 60 * 10,
-      type: "system",
-      read: true,
-    },
-    {
-      id: "n3",
-      message: "Keep walking to earn more points",
-      timestamp: now - 1000 * 60 * 60 * 30,
-      type: "alert",
-      read: false,
-    },
-  ];
-
-  if (!isAdmin) return base;
-  return [
-    {
-      id: "a1",
-      message: "User redeemed a reward",
-      timestamp: now - 1000 * 60 * 15,
-      type: "system",
-      read: false,
-    },
-    {
-      id: "a2",
-      message: "New user registered",
-      timestamp: now - 1000 * 60 * 60 * 6,
-      type: "system",
-      read: true,
-    },
-    ...base,
-  ];
-}
-
-function loadNotifications(isAdmin) {
-  try {
-    const raw = localStorage.getItem(NOTIF_STORAGE_KEY);
-    if (!raw) return seedNotifications(isAdmin);
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : seedNotifications(isAdmin);
-  } catch {
-    return seedNotifications(isAdmin);
-  }
-}
-
-function saveNotifications(list) {
-  localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(list));
-}
 
 const userNavItems = [
   { to: "/", label: "Home", end: true },
@@ -94,7 +36,7 @@ export default function Navbar() {
   const [me, setMe] = useState(null);
   const [notifsOpen, setNotifsOpen] = useState(false);
   const [notifications, setNotifications] = useState(() =>
-    loadNotifications(
+    loadStoredNotifications(
       typeof window !== "undefined" &&
         localStorage.getItem(AUTH_ROLE_KEY) === "admin"
     )
@@ -104,6 +46,14 @@ export default function Navbar() {
     localStorage.getItem(AUTH_ROLE_KEY) === "admin";
   const token =
     typeof window !== "undefined" ? localStorage.getItem(AUTH_TOKEN_KEY) : "";
+
+  useEffect(() => {
+    return subscribeToNotificationUpdates(() => {
+      setNotifications(
+        loadStoredNotifications(localStorage.getItem(AUTH_ROLE_KEY) === "admin")
+      );
+    });
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -139,7 +89,7 @@ export default function Navbar() {
   function markRead(id) {
     setNotifications((prev) => {
       const next = prev.map((n) => (n.id === id ? { ...n, read: true } : n));
-      saveNotifications(next);
+      saveStoredNotifications(next);
       return next;
     });
   }
@@ -147,7 +97,7 @@ export default function Navbar() {
   function markAllRead() {
     setNotifications((prev) => {
       const next = prev.map((n) => ({ ...n, read: true }));
-      saveNotifications(next);
+      saveStoredNotifications(next);
       return next;
     });
   }

@@ -1,45 +1,29 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import FormAlert from "./auth/FormAlert";
 import { redeemReward, getRedeemErrorMessage } from "../services/rewards";
-import { getRewardImageUrl } from "../utils/rewardImages";
+import { prependUserNotification } from "../utils/notifications";
 
-const SUCCESS_COPY =
-  "Reward redeemed successfully 🎉 Check your email for the voucher";
+function RewardImage({ src, alt }) {
+  const safeSrc = src?.trim() ? src.trim() : "/default-reward.svg";
+  const [imgSrc, setImgSrc] = useState(safeSrc);
 
-function RewardImage({ src, title }) {
-  const [failed, setFailed] = useState(false);
-  const showImg = src && !failed;
+  useEffect(() => {
+    setImgSrc(src?.trim() ? src.trim() : "/default-reward.svg");
+  }, [src]);
 
   return (
-    <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[#fffefb] via-[#FFA500]/14 to-[#FF7518]/12">
-      {showImg ? (
-        <img
-          src={src}
-          alt={title}
-          className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
-          onError={() => setFailed(true)}
-        />
-      ) : (
-        <div
-          className="flex h-full w-full flex-col items-center justify-center gap-2 text-[#FF5F1F]/30"
-          aria-hidden
-        >
-          <svg
-            className="h-14 w-14"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3A1.5 1.5 0 001.5 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008H12V8.25z"
-            />
-          </svg>
-        </div>
-      )}
+    <div className="relative h-40 overflow-hidden rounded-t-3xl bg-gradient-to-br from-[#fffefb] via-[#FFA500]/14 to-[#FF7518]/12 sm:h-44">
+      <img
+        src={imgSrc}
+        alt={alt}
+        className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+        onError={() => {
+          if (imgSrc !== "/default-reward.svg") {
+            setImgSrc("/default-reward.svg");
+          }
+        }}
+      />
     </div>
   );
 }
@@ -48,9 +32,8 @@ export default function RewardCard({ reward, onRedeemed }) {
   const [redeeming, setRedeeming] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const submitLock = useRef(false);
-
-  const imageUrl = useMemo(() => getRewardImageUrl(reward), [reward]);
 
   const quantity =
     typeof reward.quantity === "number" ? reward.quantity : null;
@@ -67,9 +50,27 @@ export default function RewardCard({ reward, onRedeemed }) {
     submitLock.current = true;
     setError("");
     setSuccess(false);
+    setSuccessMessage("");
     setRedeeming(true);
     try {
-      await redeemReward(reward._id);
+      const data = await redeemReward(reward._id);
+      const code = data?.redemption?.voucherCode ?? "";
+      const emailSent = data?.emailSent === true;
+
+      prependUserNotification({
+        message: code
+          ? `You redeemed “${reward.title}”. Voucher code: ${code}${
+              emailSent ? ". We also emailed it to you." : ". Save this code."
+            }`
+          : `You redeemed “${reward.title}”.`,
+        type: "reward",
+      });
+
+      setSuccessMessage(
+        emailSent
+          ? "Reward redeemed! Check your email and the notification bell for your voucher code."
+          : "Reward redeemed! Your voucher code is in the notification bell."
+      );
       setSuccess(true);
       onRedeemed?.();
     } catch (err) {
@@ -91,10 +92,13 @@ export default function RewardCard({ reward, onRedeemed }) {
         y: -8,
         transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
       }}
-      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-white/50 bg-gradient-to-b from-white/98 to-[#FFA500]/10 shadow-lg shadow-[#FF7518]/15 ring-1 ring-[#FFA500]/20 backdrop-blur-sm transition-shadow duration-500 ease-out hover:shadow-2xl hover:shadow-[#FF5F1F]/20"
+      className="group flex w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-white/50 bg-gradient-to-b from-white/98 to-[#FFA500]/10 shadow-lg shadow-[#FF7518]/15 ring-1 ring-[#FFA500]/20 backdrop-blur-sm transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#FF5F1F]/30"
     >
       <div className="relative">
-        <RewardImage src={imageUrl} title={reward.title} />
+        <RewardImage
+          src={reward.imageUrl}
+          alt={reward.name || reward.title || "Reward"}
+        />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/20 via-stone-900/5 to-transparent opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100" />
       </div>
 
@@ -145,7 +149,7 @@ export default function RewardCard({ reward, onRedeemed }) {
             className="mt-3"
           >
             <FormAlert variant="success" role="status">
-              {SUCCESS_COPY}
+              {successMessage}
             </FormAlert>
           </motion.div>
         )}

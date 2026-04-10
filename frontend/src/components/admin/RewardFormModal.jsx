@@ -7,7 +7,7 @@ import { authInputClassName, authLabelClassName } from "../auth/authFieldStyles"
 const emptyForm = () => ({
   title: "",
   description: "",
-  image: "",
+  imageUrl: "",
   storeName: "",
   pointsRequired: "",
   quantity: "0",
@@ -19,7 +19,7 @@ function rewardToForm(reward) {
   return {
     title: reward.title ?? "",
     description: reward.description ?? "",
-    image: reward.image ?? "",
+    imageUrl: reward.imageUrl ?? reward.image ?? "",
     storeName: reward.storeName ?? "",
     pointsRequired: String(reward.pointsRequired ?? ""),
     quantity: String(reward.quantity ?? 0),
@@ -70,11 +70,15 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
       setError("Quantity must be a valid number (0 or greater).");
       return;
     }
+    if (!/^https?:\/\//i.test(form.imageUrl.trim())) {
+      setError("Image URL must start with http:// or https://");
+      return;
+    }
 
     const payload = {
       title: form.title.trim(),
       description: form.description.trim() || undefined,
-      image: form.image.trim() || "",
+      imageUrl: form.imageUrl.trim(),
       storeName: form.storeName.trim() || "",
       pointsRequired: points,
       quantity: qty,
@@ -195,16 +199,28 @@ export default function RewardFormModal({ open, reward, onClose, onSaved }) {
 
               <div>
                 <label htmlFor="rw-image" className={authLabelClassName}>
-                  Image URL
+                  Image URL <span className="text-red-600">*</span>
                 </label>
                 <input
                   id="rw-image"
                   type="text"
-                  value={form.image}
-                  onChange={(e) => update("image", e.target.value)}
+                  value={form.imageUrl}
+                  onChange={(e) => update("imageUrl", e.target.value)}
                   className={`mt-1.5 ${inputClass}`}
                   placeholder="https://…"
                 />
+                {/^https?:\/\//i.test(form.imageUrl.trim()) && (
+                  <div className="mt-2 overflow-hidden rounded-xl border border-stone-200/80 bg-stone-50/60 p-1">
+                    <img
+                      src={form.imageUrl.trim()}
+                      alt="preview"
+                      className="h-24 w-full rounded-lg object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/default-reward.svg";
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">

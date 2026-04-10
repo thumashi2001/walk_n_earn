@@ -20,7 +20,7 @@ export async function createRewardAdmin(payload) {
  * @param {Record<string, unknown>} payload
  */
 export async function updateRewardAdmin(id, payload) {
-  const { data } = await API.put(`/rewards/${id}`, payload);
+  const { data } = await API.put(`/rewards/${encodeURIComponent(String(id))}`, payload);
   return data;
 }
 

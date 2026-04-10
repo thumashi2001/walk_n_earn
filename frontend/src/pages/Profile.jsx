@@ -7,10 +7,13 @@ import RedeemItem from "../components/RedeemItem";
 import BadgeCard from "../components/BadgeCard";
 import Sidebar from "../components/Sidebar";
 import SettingsModal from "../components/SettingsModal";
+import {
+  loadStoredNotifications,
+  subscribeToNotificationUpdates,
+} from "../utils/notifications";
 
 const DEFAULT_LOCATION = "Location unavailable";
 const PROFILE_LOCAL_KEY = "profileLocal";
-const NOTIF_STORAGE_KEY = "notifications";
 
 function initialsFromName(name = "") {
   const words = String(name).trim().split(/\s+/).filter(Boolean);
@@ -36,16 +39,6 @@ function loadLocalProfile() {
 
 function saveLocalProfile(next) {
   localStorage.setItem(PROFILE_LOCAL_KEY, JSON.stringify(next));
-}
-
-function loadNotifications() {
-  try {
-    const raw = localStorage.getItem(NOTIF_STORAGE_KEY);
-    const parsed = JSON.parse(raw || "[]");
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
 }
 
 function formatNotifTime(ts) {
@@ -80,6 +73,13 @@ export default function Profile() {
   const [formError, setFormError] = useState("");
   const [localProfile, setLocalProfile] = useState(() => loadLocalProfile());
   const [draft, setDraft] = useState(() => loadLocalProfile());
+  const [notifTick, setNotifTick] = useState(0);
+
+  useEffect(() => {
+    return subscribeToNotificationUpdates(() =>
+      setNotifTick((t) => t + 1)
+    );
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -194,7 +194,10 @@ export default function Profile() {
     }
   }
 
-  const notifications = useMemo(() => loadNotifications(), []);
+  const notifications = useMemo(() => {
+    const isAdmin = role === "admin";
+    return loadStoredNotifications(isAdmin);
+  }, [notifTick, role]);
   const recentNotifications = useMemo(
     () => notifications.slice(0, 5),
     [notifications]

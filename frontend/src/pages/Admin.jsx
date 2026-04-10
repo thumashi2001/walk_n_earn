@@ -11,7 +11,6 @@ import { fetchRewardsList } from "../services/rewards";
 import API, { getFriendlyApiError } from "../services/api";
 import RewardFormModal from "../components/admin/RewardFormModal";
 import DeleteRewardModal from "../components/admin/DeleteRewardModal";
-import { getRewardImageUrl } from "../utils/rewardImages";
 import RedemptionTable from "../components/RedemptionTable";
 import UserTable from "../components/UserTable";
 
@@ -302,9 +301,12 @@ function AdminDashboard() {
                     <td className="px-4 py-3 sm:px-6">
                       <div className="h-14 w-20 overflow-hidden rounded-xl bg-stone-100 shadow-sm ring-1 ring-stone-200/80 transition-transform duration-300 ease-out hover:scale-105 hover:shadow-md">
                         <img
-                          src={getRewardImageUrl(r)}
-                          alt=""
+                          src={r.imageUrl}
+                          alt={r.title || r.name || ""}
                           className="h-full w-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "/default-reward.svg";
+                          }}
                         />
                       </div>
                     </td>

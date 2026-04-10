@@ -1,7 +1,17 @@
 import axios from "axios";
 
+/**
+ * Dev: use same-origin `/api` so Vite proxies to the real backend (see vite.config.js).
+ * The proxy reads Backend/.env PORT so it matches even when PORT is not 5000.
+ *
+ * Override anytime with VITE_API_URL (e.g. production or a remote API).
+ */
+const baseURL =
+  import.meta.env.VITE_API_URL?.trim() ||
+  (import.meta.env.DEV ? "/api" : "http://127.0.0.1:5000/api");
+
 const API = axios.create({
-  baseURL: import.meta.env?.VITE_API_URL || "http://localhost:5050/api",
+  baseURL,
 });
 
 API.interceptors.request.use((req) => {
