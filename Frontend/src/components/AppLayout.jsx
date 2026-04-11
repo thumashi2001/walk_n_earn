@@ -12,6 +12,7 @@ function AppLayout() {
     { label: "Walk", path: "/app/walk" },
     { label: "Rewards", path: "/app/rewards" },
     { label: "Leaderboard", path: "/app/leaderboard" },
+    { label: "Weather", path: "/app/weather" },
     { label: "About", path: "/app/about" },
   ];
 
@@ -79,6 +80,7 @@ function AppLayout() {
 
             <button
               onClick={() => setMenuOpen(!menuOpen)}
+              className="mobile-menu-btn"
               style={{
                 border: "1px solid #ddd",
                 background: "#fff",
@@ -87,7 +89,6 @@ function AppLayout() {
                 cursor: "pointer",
                 display: "none",
               }}
-              className="mobile-menu-btn"
             >
               ☰
             </button>
