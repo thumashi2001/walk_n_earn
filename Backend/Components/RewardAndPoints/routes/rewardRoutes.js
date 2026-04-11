@@ -8,6 +8,7 @@ router.post("/", authMiddleware, adminMiddleware, controller.createReward);
 router.get("/", controller.getRewards);
 router.put("/:id", authMiddleware, adminMiddleware, controller.updateReward);
 router.delete("/:id", authMiddleware, adminMiddleware, controller.deleteReward);
+router.get("/redemptions", authMiddleware, adminMiddleware, controller.getRedemptions);
 router.post("/redeem", authMiddleware, controller.redeemReward);
 
 module.exports = router;

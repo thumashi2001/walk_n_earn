@@ -9,6 +9,10 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 exports.sendVoucherEmail = async (toEmail, voucherCode, rewardTitle) => {
+  if (!process.env.BREVO_API_KEY?.trim()) {
+    throw new Error("BREVO_API_KEY is not configured");
+  }
+
   const sendSmtpEmail = {
     sender: {
       email: "methusarupasinghe@gmail.com",

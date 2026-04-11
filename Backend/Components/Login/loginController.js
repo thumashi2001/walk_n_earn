@@ -16,19 +16,50 @@ exports.loginUser = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: "Invalid Password" });
 
-    //Generate JWT token
+    //Generate JWT token (include role for downstream checks)
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
-    //Send response with token
     res.json({
       message: "User logged in successfully",
       token,
+      role: user.role,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error});
+  }
+};
+
+//Register user
+exports.registerUser = async (req, res) => {
+  try {
+    const { fullName, email, password, role } = req.body;
+
+    //Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    //Hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    //Create user
+    const user = await User.create({
+      fullName,
+      email,
+      passwordHash,
+      role: role || "user", //default user
+    });
+
+    res.status(201).json({
+      message: "User registered successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
