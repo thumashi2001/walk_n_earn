@@ -2,62 +2,53 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Home from "./pages/Home";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { useAuth } from "./context/AuthContext";
 import About from "./pages/About";
+import Walk from "./pages/Walk";
+import Rewards from "./pages/Rewards";
+import Leaderboard from "./pages/Leaderboard";
+import AppAbout from "./pages/AppAbout";
+import Admin from "./pages/Admin";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AppLayout from "./components/AppLayout";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
   const { user } = useAuth();
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#edaf5e",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "420px",
-          minHeight: "100vh",
-          backgroundColor: "#ffffff",
-          padding: "20px",
-          boxSizing: "border-box",
-        }}
-      >
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={user ? <Navigate to="/home" replace /> : <Landing />}
-            />
-            <Route
-              path="/login"
-              element={user ? <Navigate to="/home" replace /> : <Login />}
-            />
-            <Route
-              path="/signup"
-              element={user ? <Navigate to="/home" replace /> : <Signup />}
-            />
-            <Route
-              path="/home"
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={user ? <Navigate to="/app/walk" replace /> : <Landing />}
+        />
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/app/walk" replace /> : <Login />}
+        />
+        <Route
+          path="/signup"
+          element={user ? <Navigate to="/app/walk" replace /> : <Signup />}
+        />
+        <Route path="/about" element={<About />} />
+
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/app/walk" replace />} />
+          <Route path="walk" element={<Walk />} />
+          <Route path="rewards" element={<Rewards />} />
+          <Route path="leaderboard" element={<Leaderboard />} />
+          <Route path="about" element={<AppAbout />} />
+          <Route path="admin" element={<Admin />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

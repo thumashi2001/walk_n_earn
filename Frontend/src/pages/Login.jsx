@@ -46,7 +46,7 @@ function Login() {
 
       login(data.user);
       setLoading(false);
-      navigate("/home");
+      navigate("/app/walk");
     } catch (error) {
       setMessage("Something went wrong while logging in");
       setLoading(false);
