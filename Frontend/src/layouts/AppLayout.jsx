@@ -60,6 +60,7 @@ function AppLayout() {
           {navItem("/app/walk", "Walk")}
           {navItem("/app/rewards", "Rewards")}
           {navItem("/app/leaderboard", "Leaderboard")}
+          {navItem("/app/weather", "Weather")}
           {navItem("/app/about", "About")}
           {user?.role === "admin" && navItem("/app/admin", "Admin")}
 
@@ -111,6 +112,7 @@ function AppLayout() {
           {navItem("/app/walk", "Walk")}
           {navItem("/app/rewards", "Rewards")}
           {navItem("/app/leaderboard", "Leaderboard")}
+          {navItem("/app/weather", "Weather")}
           {navItem("/app/about", "About")}
           {user?.role === "admin" && navItem("/app/admin", "Admin")}
 

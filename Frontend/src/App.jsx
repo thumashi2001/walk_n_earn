@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/AppLayout";
 import { useAuth } from "./context/AuthContext";
 import AdminRoute from "./components/AdminRoute";
+import Weather from "./pages/Weather";
 
 function App() {
   const { user } = useAuth();
@@ -45,6 +46,7 @@ function App() {
           <Route path="walk" element={<Walk />} />
           <Route path="rewards" element={<Rewards />} />
           <Route path="leaderboard" element={<Leaderboard />} />
+          <Route path="weather" element={<Weather />} />
           <Route path="about" element={<AppAbout />} />
           <Route
             path="admin"
