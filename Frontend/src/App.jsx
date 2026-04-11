@@ -11,6 +11,7 @@ import Admin from "./pages/Admin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/AppLayout";
 import { useAuth } from "./context/AuthContext";
+import AdminRoute from "./components/AdminRoute";
 
 function App() {
   const { user } = useAuth();
@@ -45,7 +46,14 @@ function App() {
           <Route path="rewards" element={<Rewards />} />
           <Route path="leaderboard" element={<Leaderboard />} />
           <Route path="about" element={<AppAbout />} />
-          <Route path="admin" element={<Admin />} />
+          <Route
+            path="admin"
+            element={
+              <AdminRoute>
+                <Admin />
+              </AdminRoute>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>
