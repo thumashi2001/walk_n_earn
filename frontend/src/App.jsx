@@ -4,8 +4,6 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Rewards from "./pages/Rewards";
 import Leaderboard from "./pages/Leaderboard";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import Admin from "./pages/Admin";
 import Profile from "./pages/Profile";
 import Walking from "./pages/Walking";
@@ -97,8 +95,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
               <Route
                 path="/admin-dashboard"
                 element={

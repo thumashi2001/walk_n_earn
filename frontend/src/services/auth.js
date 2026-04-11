@@ -1,29 +1,7 @@
 import axios from "axios";
-import API from "./api";
 
 export const AUTH_TOKEN_KEY = "token";
 export const AUTH_ROLE_KEY = "role";
-
-/**
- * @param {{ email: string; password: string }} credentials
- */
-export async function login(credentials) {
-  const { data } = await API.post("/login", credentials);
-  return data;
-}
-
-/**
- * @param {{ fullName: string; email: string; password: string }} payload
- */
-export async function register(payload) {
-  const { data } = await API.post("/login/register", payload);
-  return data;
-}
-
-export function persistSession({ token, role }) {
-  if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
-  if (role) localStorage.setItem(AUTH_ROLE_KEY, role);
-}
 
 export function clearSession() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
