@@ -22,7 +22,7 @@ function Login() {
     }));
   };
 
-  const handleLogin = async (e) => {
+const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
@@ -44,9 +44,21 @@ function Login() {
         return;
       }
 
+      // --- CRITICAL CHANGES START ---
+      // 1. Save token and role so RoleLanding (in App.jsx) can see them
+      localStorage.setItem("token", data.token); 
+      localStorage.setItem("role", data.user.role || "user");
+
+      // 2. Update your Context state
       login(data.user);
+      
       setLoading(false);
-      navigate("/app/walk");
+      
+      // 3. Navigate to "/" - RoleLanding will then pick up the token 
+      // and decide to show <Admin /> or <Dashboard /> (or <Walking />)
+      navigate("/"); 
+      // --- CRITICAL CHANGES END ---
+
     } catch (error) {
       setMessage("Something went wrong while logging in");
       setLoading(false);
