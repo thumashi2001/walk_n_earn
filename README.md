@@ -1,4 +1,4 @@
-================================================================================
+<img width="1917" height="1023" alt="Screenshot 2026-04-12 103809" src="https://github.com/user-attachments/assets/5538dc02-b8ca-4c9c-8a5a-d42bbea140b6" />================================================================================
 URBANWALKING BACKEND (WALK N EARN)
 ================================================================================
 
@@ -170,5 +170,62 @@ Mounts routers for Login, Walking, Users, Rewards, Weather, and Health Advice.
 - POST /api/rewards/redeem : Claim reward
 
 ---
+Deployment
+
+Backend Deployment
+
+The backend of this application is built with Express.js and deployed on Render.
+
+Deployment Steps
+	1.	The backend repository was connected to Render using GitHub.
+	2.	A new Web Service was created on Render.
+	3.	The following build settings were configured:
+	•	Build Command: npm install
+	•	Start Command: npm start
+	4.	Required environment variables were added through the Render dashboard.
+	5.	The backend is automatically redeployed whenever changes are pushed to the main branch.
+
+The backend connects to a MongoDB database using a connection string stored securely in environment variables.
+
+⸻
+
+Frontend Deployment
+
+The frontend of this application is built with React and deployed on Netlify.
+
+Deployment Steps
+	1.	The frontend repository was connected to Netlify using GitHub.
+	2.	The following build settings were configured:
+	•	Build Command: npm run build
+	•	Publish Directory: build/
+	3.	The frontend was deployed as a static site.
+	4.	Netlify automatically redeploys the application whenever changes are pushed to the connected branch.
+
+The frontend communicates with the backend API hosted on Render.
+
+⸻
+
+Environment Variables
+
+Backend
+	•	MONGO_URI : MongoDB connection string
+	•	JWT_SECRET : Secret key used for authentication
+	•	PORT : Server port provided by Render
+
+Frontend
+	•	REACT_APP_API_URL : Base URL of the backend API
+
+Sensitive values are not included here for security reasons.
+
+⸻
+
+Live URLs
+
+Backend API
+https://walk-n-earn-backend.onrender.com/
+
+Frontend Application
+https://walk-n-earn.netlify.app/
+
 
 # LICENSE: MIT
