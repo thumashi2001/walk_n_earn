@@ -8,6 +8,7 @@ import Rewards from "./pages/Rewards";
 import Leaderboard from "./pages/Leaderboard";
 import AppAbout from "./pages/AppAbout";
 import Admin from "./pages/Admin";
+import AdminLeaderboard from "./pages/AdminLeaderboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./components/AppLayout";
 import { useAuth } from "./context/AuthContext";
@@ -53,6 +54,14 @@ function App() {
             element={
               <AdminRoute>
                 <Admin />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin-leaderboard"
+            element={
+              <AdminRoute>
+                <AdminLeaderboard />
               </AdminRoute>
             }
           />

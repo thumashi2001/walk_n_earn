@@ -45,6 +45,7 @@ function Login() {
       }
 
       login(data.user);
+      localStorage.setItem("walknEarnToken", data.token);
       setLoading(false);
       navigate("/app/walk");
     } catch (error) {
