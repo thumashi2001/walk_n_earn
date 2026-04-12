@@ -238,4 +238,42 @@ Frontend Application
 https://walk-n-earn.netlify.app/
 
 
+------Testing Report--------- 
+
+Testing
+Prerequisites
+Node.js (LTS recommended) and npm
+Install dependencies in each app root:
+cd Backend
+npm install
+cd ../Frontend
+npm install
+Backend: tests use Jest in a Node environment. They mock MongoDB, JWT, HTTP, and email SDKs where needed, so you do not need MongoDB running for the default suite.
+
+Frontend: tests use Jest with jsdom, @testing-library/react, and a small framer-motion stub in Frontend/test/jest.setup.js. TextEncoder / TextDecoder are polyfilled for React Router 7 under Jest.
+
+How to run tests
+Backend (from Backend/):
+
+npm test
+Jest is configured in Backend/jest.config.js; tests live in Backend/test/**/*.test.js.
+
+Frontend (from Frontend/):
+
+npm test
+Jest is configured in Frontend/jest.config.cjs (roots: ["test"], setupFilesAfterEnv: ["test/jest.setup.js"]). Tests live in Frontend/test/**/*.test.js and Frontend/test/**/*.test.jsx (including Frontend/test/components/).
+
+Run a single file or pattern:
+
+# Backend
+cd Backend
+npm test -- --testPathPattern=authMiddleware
+# Frontend
+cd Frontend
+npm test -- --testPathPattern=Navbar
+Watch mode (re-run on file changes):
+
+
+npm test -- --watch
+
 # LICENSE: MIT
