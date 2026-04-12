@@ -1,4 +1,12 @@
-<img width="1917" height="1023" alt="Screenshot 2026-04-12 103809" src="https://github.com/user-attachments/assets/5538dc02-b8ca-4c9c-8a5a-d42bbea140b6" />================================================================================
+<img width="1917" height="1023" alt="Screenshot 2026-04-12 103809" src="https://github.com/user-attachments/assets/5538dc02-b8ca-4c9c-8a5a-d42bbea140b6" 
+	<img width="1919" height="1014" alt="Screenshot 2026-04-12 103846" src="https://github.com/user-attachments/assets/c1bc382d-4728-4a33-be26-618f054aed24" />
+<img width="1919" height="1021" alt="Screenshot 2026-04-12 103917" src="https://github.com/user-attachments/assets/19e282da-2818-4f69-a859-e7a5171ef2f0" />
+<img width="1919" height="1014" alt="Screenshot 2026-04-12 104215" src="https://github.com/user-attachments/assets/1e514fe0-d4ed-4cc3-ac72-8c7ba6b05163" />
+
+	
+
+	
+	/>================================================================================
 URBANWALKING BACKEND (WALK N EARN)
 ================================================================================
 
