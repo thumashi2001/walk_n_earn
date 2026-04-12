@@ -10,15 +10,15 @@ const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.GMAIL_USER,        // e.g. yourName@gmail.com
     pass: process.env.GMAIL_APP_PASSWORD, // 16-char app password
   },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 15000,
+  connectionTimeout: 15000,
+  greetingTimeout: 15000,
+  socketTimeout: 20000,
 });
 
 exports.sendVoucherEmail = async (toEmail, voucherCode, rewardTitle) => {

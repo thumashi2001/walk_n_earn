@@ -23,19 +23,10 @@ exports.loginUser = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    //Send response with token (include user object for frontend)
+    //Send response with token
     res.json({
       message: "User logged in successfully",
       token,
-      user: {
-        _id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        totalPoints: user.totalPoints,
-        totalCo2SavedKg: user.totalCo2SavedKg,
-        totalDistanceKm: user.totalDistanceKm,
-      },
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error});

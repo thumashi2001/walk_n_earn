@@ -1,41 +1,74 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import About from "./pages/About";
+import Walk from "./pages/Walk";
+import Rewards from "./pages/Rewards";
+import Leaderboard from "./pages/Leaderboard";
+import AppAbout from "./pages/AppAbout";
+import Admin from "./pages/Admin";
+import AdminLeaderboard from "./pages/AdminLeaderboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AppLayout from "./components/AppLayout";
 import { useAuth } from "./context/AuthContext";
-import Navbar from "./components/Layout/Navbar";
-import LoginPage from "./components/Auth/LoginPage";
-import LeaderboardPage from "./components/Leaderboard/LeaderboardPage";
-import AdminLeaderboardPage from "./components/Leaderboard/AdminLeaderboardPage";
-import RewardsPage from "./components/Rewards/RewardsPage";
+import AdminRoute from "./components/AdminRoute";
+import Weather from "./pages/Weather";
 
-function ProtectedRoute({ children }) {
-  const { token } = useAuth();
-  return token ? children : <Navigate to="/login" replace />;
-}
+function App() {
+  const { user } = useAuth();
 
-export default function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={user ? <Navigate to="/app/walk" replace /> : <Landing />}
+        />
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/app/walk" replace /> : <Login />}
+        />
+        <Route
+          path="/signup"
+          element={user ? <Navigate to="/app/walk" replace /> : <Signup />}
+        />
+        <Route path="/about" element={<About />} />
 
-      {/* All authenticated pages share the Navbar layout */}
-      <Route
-        path="/*"
-        element={
-          <ProtectedRoute>
-            <div className="min-h-screen bg-gray-50">
-              <Navbar />
-              <main className="container mx-auto px-4 py-8">
-                <Routes>
-                  <Route path="/leaderboard" element={<LeaderboardPage />} />
-                  <Route path="/admin/leaderboard" element={<AdminLeaderboardPage />} />
-                  <Route path="/rewards" element={<RewardsPage />} />
-                  {/* Default redirect */}
-                  <Route path="*" element={<Navigate to="/leaderboard" replace />} />
-                </Routes>
-              </main>
-            </div>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+        <Route
+          path="/app"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/app/walk" replace />} />
+          <Route path="walk" element={<Walk />} />
+          <Route path="rewards" element={<Rewards />} />
+          <Route path="leaderboard" element={<Leaderboard />} />
+          <Route path="weather" element={<Weather />} />
+          <Route path="about" element={<AppAbout />} />
+          <Route
+            path="admin"
+            element={
+              <AdminRoute>
+                <Admin />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="admin-leaderboard"
+            element={
+              <AdminRoute>
+                <AdminLeaderboard />
+              </AdminRoute>
+            }
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
