@@ -31,11 +31,11 @@ export default function Rewards() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
-      <header className="rounded-3xl border border-white/60 bg-gradient-to-b from-white/95 via-white/90 to-amber-50/25 px-5 py-8 text-center shadow-xl shadow-stone-300/25 ring-1 ring-stone-200/50 backdrop-blur-sm transition-shadow duration-500 hover:shadow-2xl hover:shadow-amber-900/10 sm:px-10 sm:py-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-800/90">
+      <header className="rounded-3xl border border-white/60 bg-gradient-to-b from-white/95 via-white/90 to-[#FFA500]/12 px-5 py-8 text-center shadow-xl shadow-[#FF7518]/15 ring-1 ring-[#FFA500]/20 backdrop-blur-sm transition-shadow duration-500 hover:shadow-2xl hover:shadow-[#FF5F1F]/20 sm:px-10 sm:py-12">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FF5F1F]">
           Rewards
         </p>
-        <h1 className="mt-3 bg-gradient-to-r from-stone-900 via-stone-800 to-amber-900/90 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl">
+        <h1 className="mt-3 bg-gradient-to-r from-[#5f2100] via-[#FF7518] to-[#FF5F1F] bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl">
           Collect your rewards
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-stone-600 sm:text-base">
@@ -43,10 +43,10 @@ export default function Rewards() {
         </p>
       </header>
 
-      <section className="rounded-3xl border border-stone-200/40 bg-gradient-to-b from-white/95 to-amber-50/35 p-5 shadow-xl shadow-stone-300/20 ring-1 ring-stone-100/80 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl sm:p-8">
+      <section className="rounded-3xl border border-stone-200/40 bg-gradient-to-b from-white/95 to-[#FFA500]/12 p-5 shadow-xl shadow-[#FF7518]/15 ring-1 ring-[#FFA500]/15 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl sm:p-8">
         {loading && (
           <div className="flex flex-col items-center justify-center gap-4 py-20">
-            <span className="h-10 w-10 animate-spin rounded-full border-2 border-amber-200 border-t-amber-700" />
+            <span className="h-10 w-10 animate-spin rounded-full border-2 border-[#FFA500]/30 border-t-[#FF5F1F]" />
             <p className="text-sm font-medium text-stone-600">
               Loading rewards…
             </p>

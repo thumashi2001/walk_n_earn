@@ -1,110 +1,250 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthPageShell from "../components/auth/AuthPageShell";
-import FormAlert from "../components/auth/FormAlert";
-import LabeledIconInput from "../components/auth/LabeledIconInput";
-import AuthPrimaryButton from "../components/auth/AuthPrimaryButton";
-import { IconEnvelope, IconLock } from "../components/auth/icons";
-import {
-  login,
-  persistSession,
-  getAuthErrorMessage,
-} from "../services/auth";
+import { API_URL } from "../config";
+import { useAuth } from "../context/AuthContext";
 
-export default function Login() {
+function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const { login } = useAuth();
 
-  async function handleSubmit(e) {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
-    setSubmitting(true);
+    setLoading(true);
+    setMessage("");
+
     try {
-      const data = await login({
-        email: email.trim(),
-        password,
+      const response = await fetch(`${API_URL}/api/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-      const token = data?.token;
-      const role = data?.role ?? "user";
-      if (!token) {
-        setError("Invalid response from server. Please try again.");
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message || "Login failed");
+        setLoading(false);
         return;
       }
-      persistSession({ token, role });
-      navigate(role === "admin" ? "/admin" : "/rewards", { replace: true });
-    } catch (err) {
-      setError(
-        getAuthErrorMessage(err, {
-          actionFallback: "Sign-in failed. Please try again.",
-        })
-      );
-    } finally {
-      setSubmitting(false);
+
+      // --- CRITICAL CHANGES START ---
+      // 1. Save token and role so RoleLanding (in App.jsx) can see them
+      localStorage.setItem("token", data.token); 
+      localStorage.setItem("role", data.user.role || "user");
+
+      // 2. Update your Context state
+      login(data.user);
+      
+      setLoading(false);
+      
+      // 3. Navigate to "/" - RoleLanding will then pick up the token 
+      // and decide to show <Admin /> or <Dashboard /> (or <Walking />)
+      navigate("/"); 
+      // --- CRITICAL CHANGES END ---
+
+    } catch (error) {
+      setMessage("Something went wrong while logging in");
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <AuthPageShell
-      title="Welcome back"
-      description="Sign in with your email to continue earning rewards."
-      footer={
-        <p className="mt-8 text-center text-sm text-stone-600">
-          New here?{" "}
-          <Link
-            to="/signup"
-            className="font-semibold text-amber-900 underline-offset-4 transition-all duration-300 hover:text-amber-950 hover:underline hover:decoration-amber-600/60"
-          >
-            Create an account
-          </Link>
-        </p>
-      }
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f7f1e6",
+        padding: "24px 16px",
+        boxSizing: "border-box",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-        {error && <FormAlert variant="error">{error}</FormAlert>}
-
-        <LabeledIconInput
-          id="login-email"
-          name="email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          icon={<IconEnvelope />}
-        />
-
-        <LabeledIconInput
-          id="login-password"
-          name="password"
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          icon={<IconLock />}
-          labelRight={
+      <div style={{ width: "100%", maxWidth: "460px" }}>
+        <div
+          style={{
+            background: "#fff",
+            border: "1px solid #eee",
+            borderRadius: "24px",
+            padding: "24px",
+            boxShadow: "0 10px 24px rgba(0,0,0,0.05)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "18px",
+            }}
+          >
             <button
-              type="button"
-              className="rounded-lg px-1.5 py-0.5 text-xs font-medium text-amber-800/90 transition-all duration-200 hover:bg-amber-100/60 hover:text-amber-950 active:scale-95"
-              onClick={() => setShowPassword((v) => !v)}
+              onClick={() => navigate("/")}
+              style={{
+                border: "none",
+                background: "#eee",
+                borderRadius: "10px",
+                padding: "6px 12px",
+                cursor: "pointer",
+                fontSize: "13px",
+              }}
             >
-              {showPassword ? "Hide" : "Show"}
+              ← Home
             </button>
-          }
-        />
 
-        <AuthPrimaryButton loading={submitting} loadingLabel="Signing in…">
-          Sign in
-        </AuthPrimaryButton>
-      </form>
-    </AuthPageShell>
+            <span style={{ fontWeight: "700" }}>Walk n Earn</span>
+          </div>
+
+          <div style={{ textAlign: "center", marginBottom: "26px" }}>
+            <div
+              style={{
+                width: "68px",
+                height: "68px",
+                margin: "0 auto 14px auto",
+                borderRadius: "20px",
+                backgroundColor: "#edaf5e",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "28px",
+              }}
+            >
+              🚶
+            </div>
+
+            <h1 style={{ margin: 0, fontSize: "28px", color: "#222" }}>
+              Welcome Back
+            </h1>
+            <p style={{ marginTop: "8px", color: "#666", fontSize: "14px" }}>
+              Login and continue your walking journey
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin}>
+            <div style={{ marginBottom: "14px" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "14px",
+                  border: "1px solid #ddd",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: "18px" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "14px",
+                  border: "1px solid #ddd",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "13px",
+                borderRadius: "14px",
+                border: "none",
+                backgroundColor: "#edaf5e",
+                color: "#222",
+                fontSize: "15px",
+                fontWeight: "700",
+                cursor: "pointer",
+              }}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+
+          {message && (
+            <p
+              style={{
+                marginTop: "12px",
+                textAlign: "center",
+                color: "red",
+                fontSize: "14px",
+              }}
+            >
+              {message}
+            </p>
+          )}
+
+          <p style={{ marginTop: "14px", textAlign: "center", fontSize: "14px" }}>
+            Don&apos;t have an account?{" "}
+            <Link
+              to="/signup"
+              style={{
+                color: "#edaf5e",
+                fontWeight: "700",
+                textDecoration: "none",
+              }}
+            >
+              Sign up
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default Login;

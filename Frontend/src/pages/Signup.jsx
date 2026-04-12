@@ -1,114 +1,269 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthPageShell from "../components/auth/AuthPageShell";
-import FormAlert from "../components/auth/FormAlert";
-import LabeledIconInput from "../components/auth/LabeledIconInput";
-import AuthPrimaryButton from "../components/auth/AuthPrimaryButton";
-import { IconEnvelope, IconLock, IconUser } from "../components/auth/icons";
-import { register, getAuthErrorMessage } from "../services/auth";
+import { API_URL } from "../config";
 
-export default function Signup() {
+function Signup() {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
-  async function handleSubmit(e) {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSignup = async (e) => {
     e.preventDefault();
-    setError("");
-    setSubmitting(true);
+    setLoading(true);
+    setMessage("");
+
     try {
-      await register({
-        fullName: fullName.trim(),
-        email: email.trim(),
-        password,
+      const response = await fetch(`${API_URL}/api/users/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-      navigate("/login", { replace: true });
-    } catch (err) {
-      setError(
-        getAuthErrorMessage(err, {
-          actionFallback: "Could not create your account. Please try again.",
-        })
-      );
-    } finally {
-      setSubmitting(false);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setMessage(data.message || "Signup failed");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(false);
+      setMessage("Account created successfully");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    } catch (error) {
+      setMessage("Something went wrong while signing up");
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <AuthPageShell
-      title="Create your account"
-      description="Join Walk n Earn and start turning steps into rewards."
-      footer={
-        <p className="mt-8 text-center text-sm text-stone-600">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="font-semibold text-amber-900 underline-offset-4 transition-all duration-300 hover:text-amber-950 hover:underline hover:decoration-amber-600/60"
-          >
-            Sign in
-          </Link>
-        </p>
-      }
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f7f1e6",
+        padding: "24px 16px",
+        boxSizing: "border-box",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-        {error && <FormAlert variant="error">{error}</FormAlert>}
-
-        <LabeledIconInput
-          id="signup-fullName"
-          name="fullName"
-          label="Full name"
-          type="text"
-          autoComplete="name"
-          required
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder="Alex Johnson"
-          icon={<IconUser />}
-        />
-
-        <LabeledIconInput
-          id="signup-email"
-          name="email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          icon={<IconEnvelope />}
-        />
-
-        <LabeledIconInput
-          id="signup-password"
-          name="password"
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          autoComplete="new-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="••••••••"
-          icon={<IconLock />}
-          labelRight={
+      <div style={{ width: "100%", maxWidth: "460px" }}>
+        <div
+          style={{
+            background: "#fff",
+            border: "1px solid #eee",
+            borderRadius: "24px",
+            padding: "24px",
+            boxShadow: "0 10px 24px rgba(0,0,0,0.05)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "18px",
+            }}
+          >
             <button
-              type="button"
-              className="rounded-lg px-1.5 py-0.5 text-xs font-medium text-amber-800/90 transition-all duration-200 hover:bg-amber-100/60 hover:text-amber-950 active:scale-95"
-              onClick={() => setShowPassword((v) => !v)}
+              onClick={() => navigate("/")}
+              style={{
+                border: "none",
+                background: "#eee",
+                borderRadius: "10px",
+                padding: "6px 12px",
+                cursor: "pointer",
+                fontSize: "13px",
+              }}
             >
-              {showPassword ? "Hide" : "Show"}
+              ← Home
             </button>
-          }
-        />
 
-        <AuthPrimaryButton loading={submitting} loadingLabel="Creating account…">
-          Create account
-        </AuthPrimaryButton>
-      </form>
-    </AuthPageShell>
+            <span style={{ fontWeight: "700" }}>Walk n Earn</span>
+          </div>
+
+          <div style={{ textAlign: "center", marginBottom: "26px" }}>
+            <div
+              style={{
+                width: "68px",
+                height: "68px",
+                margin: "0 auto 14px auto",
+                borderRadius: "20px",
+                backgroundColor: "#edaf5e",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "28px",
+              }}
+            >
+              🌍
+            </div>
+
+            <h1 style={{ margin: 0, fontSize: "28px", color: "#222" }}>
+              Create Account
+            </h1>
+            <p style={{ marginTop: "8px", color: "#666", fontSize: "14px" }}>
+              Join Walk n Earn and start earning points
+            </p>
+          </div>
+
+          <form onSubmit={handleSignup}>
+            <div style={{ marginBottom: "14px" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
+              >
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                placeholder="Enter full name"
+                value={formData.fullName}
+                onChange={handleChange}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "14px",
+                  border: "1px solid #ddd",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: "14px" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "14px",
+                  border: "1px solid #ddd",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: "18px" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "8px",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                }}
+              >
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "14px",
+                  border: "1px solid #ddd",
+                  fontSize: "15px",
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%",
+                padding: "13px",
+                borderRadius: "14px",
+                border: "none",
+                backgroundColor: "#edaf5e",
+                color: "#222",
+                fontSize: "15px",
+                fontWeight: "700",
+                cursor: "pointer",
+              }}
+            >
+              {loading ? "Creating..." : "Sign Up"}
+            </button>
+          </form>
+
+          {message && (
+            <p
+              style={{
+                marginTop: "12px",
+                textAlign: "center",
+                color: message.toLowerCase().includes("success") ? "green" : "red",
+                fontSize: "14px",
+              }}
+            >
+              {message}
+            </p>
+          )}
+
+          <p style={{ textAlign: "center", marginTop: "14px", fontSize: "14px" }}>
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              style={{
+                color: "#edaf5e",
+                fontWeight: "700",
+                textDecoration: "none",
+              }}
+            >
+              Login
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default Signup;

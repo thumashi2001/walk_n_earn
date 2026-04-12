@@ -8,6 +8,7 @@ const loginRoutes = require("./Components/Login/loginRoutes");
 const userRoutes = require("./Components/User/routes/userRoutes");
 const rewardRoutes = require("./Components/RewardAndPoints/routes/rewardRoutes");
 
+const path = require("path");
 // Import weather/health Advice component
 const healthAdviceRoutes = require("./Components/Weather/admin/routes/healthAdviceRoutes");
 

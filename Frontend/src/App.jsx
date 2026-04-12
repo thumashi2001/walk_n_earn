@@ -1,37 +1,136 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Rewards from "./pages/Rewards";
 import Leaderboard from "./pages/Leaderboard";
+import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
+import Walking from "./pages/Walking";
+import Location from "./pages/Location";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Admin from "./pages/Admin";
 import WeatherAdmin from "./pages/weather_admin/WeatherAdmin";
-import WeatherUpdates from "./pages/weather_user/WeatherUpdates";
+import Weather from "./pages/weather_user/WeatherUpdates";
+
+function RoleLanding() {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role") || "";
+  if (!token) return <Home />;
+  return role === "admin" ? <Admin /> : <Dashboard />;
+}
 
 function App() {
   return (
     <Router>
-      <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#faf7f0] via-[#fffefb] to-[#f3eee4] px-4 pb-12 pt-4 sm:px-6">
+      <div className="relative min-h-screen overflow-x-hidden bg-gradient-to-b from-[#fff4db] via-[#ffe4c4] to-[#ffd2ad] px-4 pb-12 pt-4 sm:px-6 dark:bg-gradient-to-b dark:from-stone-950 dark:via-stone-950 dark:to-stone-900">
         <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
-          <div className="absolute left-[10%] top-[-10%] h-[28rem] w-[28rem] rounded-full bg-gradient-to-br from-amber-200/35 via-amber-100/20 to-transparent blur-3xl" />
-          <div className="absolute bottom-[-5%] right-[-5%] h-[22rem] w-[22rem] rounded-full bg-gradient-to-tl from-stone-300/25 via-amber-50/20 to-transparent blur-3xl" />
-          <div className="absolute bottom-1/3 left-1/2 h-64 w-96 -translate-x-1/2 rounded-full bg-white/40 blur-3xl" />
+          <div className="absolute left-[10%] top-[-10%] h-[28rem] w-[28rem] rounded-full bg-gradient-to-br from-[#FFA500]/35 via-[#FF7518]/20 to-transparent blur-3xl dark:from-[#FFA500]/18 dark:via-[#FF7518]/10" />
+          <div className="absolute bottom-[-5%] right-[-5%] h-[22rem] w-[22rem] rounded-full bg-gradient-to-tl from-[#FF5F1F]/25 via-[#FFA500]/20 to-transparent blur-3xl dark:from-[#FF5F1F]/14 dark:via-[#FFA500]/10" />
+          <div className="absolute bottom-1/3 left-1/2 h-64 w-96 -translate-x-1/2 rounded-full bg-white/40 blur-3xl dark:bg-white/5" />
         </div>
         <div className="relative mx-auto max-w-6xl">
           <Navbar />
           <main className="min-h-[50vh]">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/rewards" element={<Rewards />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/weather-updates" element={<WeatherUpdates />} />
+              <Route path="/" element={<RoleLanding />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/weather-admin" element={<WeatherAdmin />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/about"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <About />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/rewards"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Rewards />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/leaderboard"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Leaderboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/walking"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Walking />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/location"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Location />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin-dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={<Navigate to="/admin-dashboard" replace />}
+              />
+
+              {/* --- NEW USER WEATHER ROUTE --- */}
+              <Route
+                path="/weather"
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Weather />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* --- NEW ADMIN WEATHER ROUTE --- */}
+              <Route
+                path="/admin-weather"
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <WeatherAdmin />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </main>
         </div>
